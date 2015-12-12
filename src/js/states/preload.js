@@ -12,9 +12,9 @@ define(['helper'], function(Helper) {
         create: function() {
             // skip game play menu for debugging
             if( Helper.QueryString.skip_menu ) {
-                game.state.start('gameplay');
+                this.game.state.start('gameplay');
             } else {
-                game.state.start('main-menu');
+                this.game.state.start('main-menu');
             }
         }
     };
