@@ -25,13 +25,13 @@ define(['phaser', 'objects/tree'], function(Phaser, Tree) {
     ////
     Branch.prototype.generateChildren = function (branch_config) {
 
-        for( var i = randomIntFromInterval(1, 3); i >=0; i--) {
+        for( var i = this.game.rnd.integerInRange(1, 4); i >=0; i--) {
             var config = {
                 depth: this.config.depth + 1,
-                angle: this.config.angle + randomIntFromInterval(-branch_config.radius, branch_config.radius),
-                length: this.config.length * randomFromInterval(0.6, 0.98),
-                strength: this.config.strength * randomFromInterval(0.5, 0.8),
-                branchFactor: branch_config.branchFactor + randomFromInterval(0.1, 0.3)
+                angle: this.config.angle + this.game.rnd.integerInRange(-branch_config.radius, branch_config.radius),
+                length: this.config.length * this.game.rnd.realInRange(0.6, .98),
+                strength: this.config.strength * this.game.rnd.realInRange(0.5, 0.8),
+                branchFactor: branch_config.branchFactor + this.game.rnd.realInRange(0.1, 0.3)
             };
 
             var branch = new Branch(this.game, this, config);
