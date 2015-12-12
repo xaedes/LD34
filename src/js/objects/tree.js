@@ -16,18 +16,25 @@ define(['phaser', 'objects/tree/branch'], function(Phaser, Branch) {
             game,
             this,
             {
-                depth: 0,
+                depth: 1,
                 angle: -90,
-                length: 100,
-                strength: 20,
-                branchFactor: 2
+                length: 30,
+                strength: 5,
             }
         );
         this.root.generateChildren({
-            branchPred: 0.5,
+            branches: [2, 6],
             radius: 50
         });
 
+        this.gKey = this.game.input.keyboard.addKey(Phaser.Keyboard.G);
+        this.gKey.onDown.add(function() {
+            console.log("Grow!");
+            this.grow();
+            this.draw();
+        }, this);
+
+        this.draw();
     }
 
     Tree.prototype = Object.create(Phaser.Group.prototype);
@@ -36,6 +43,14 @@ define(['phaser', 'objects/tree/branch'], function(Phaser, Branch) {
     ////
     // Public methods
     ////
+    Tree.prototype.grow = function () {
+        window.tree_graphics.clear();
+        this.root.grow();
+        this.root.updatePheromoneLevel();
+
+        return this;
+    };
+
     Tree.prototype.draw = function () {
         this.root.draw();
 

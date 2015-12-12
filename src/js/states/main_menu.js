@@ -35,10 +35,10 @@ define(['phaser'], function(Phaser) {
             this.menu = menu;
 
 
-            this.enterKey = this.game.input.keyboard
+            this.gKey = this.game.input.keyboard
                 .addKey(Phaser.Keyboard.ENTER);
 
-            this.enterKey.onDown.add(this.tweenPlayState, this);
+            this.gKey.onDown.add(this.tweenPlayState, this);
         },
 
         tweenPlayState: function() {

@@ -26,14 +26,23 @@ define(["phaser"], function(Phaser) {
         }(),
 
 
-	    "randomIntFromInterval": function (min, max) {
-            return Math.floor(Math.random()*(max-min+1)+min);
+	    "randomNormal": function (rnd, mean, std) {
+            var num = 0;
+            for (var i = 0; i < 12; i++) {
+                num += rnd.realInRange(0.0, 1.0)
+            }
+
+            num -= 6;
+            num *= std;
+            num += mean;
+
+            return num;
 	    },
 
         "BitmapDataFromImage": function (game, imageKey) {
             var colormap = new Phaser.Image(this.game, 0, 0, "colormap");
             var colormap_bm = new Phaser.BitmapData("bm_colormap",this.colormap.width, this.colormap.height);
-            var colormap_bm.draw(this.colormap);
+            colormap_bm.draw(this.colormap);
             return colormap_bm;
         }
     };
