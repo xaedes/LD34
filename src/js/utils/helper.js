@@ -1,5 +1,5 @@
 'use strict';
-define([], function() {
+define(["phaser"], function(Phaser) {
 
     // source: http://stackoverflow.com/a/979995
     return {
@@ -26,8 +26,15 @@ define([], function() {
         }(),
 
 
-	    "randomIntFromInterval": function randomIntFromInterval(min, max) {
+	    "randomIntFromInterval": function (min, max) {
             return Math.floor(Math.random()*(max-min+1)+min);
-	    }
+	    },
+
+        "BitmapDataFromImage": function (game, imageKey) {
+            var colormap = new Phaser.Image(this.game, 0, 0, "colormap");
+            var colormap_bm = new Phaser.BitmapData("bm_colormap",this.colormap.width, this.colormap.height);
+            var colormap_bm.draw(this.colormap);
+            return colormap_bm;
+        }
     };
 });
