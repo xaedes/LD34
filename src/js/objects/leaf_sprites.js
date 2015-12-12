@@ -5,7 +5,8 @@ define(['phaser', 'helper'], function(Phaser, Helper) {
         this.game = game;
         this.tree = tree;
 
-        this.tree.onGrow.add(this.treeGrow,this);
+        this.tree.onGrow.add(this.treeUpdate,this);
+        this.tree.onCut.add(this.treeUpdate,this);
 
         var width = 32;
         var height = 32;
@@ -64,7 +65,7 @@ define(['phaser', 'helper'], function(Phaser, Helper) {
 
     LeafSprites.prototype = Object.create(Phaser.Image.prototype);
 
-    LeafSprites.prototype.treeGrow = function () {
+    LeafSprites.prototype.treeUpdate = function () {
         var stack = [this.tree.root];
         this.target_tex.clear();
         while(stack.length > 0){
