@@ -33,6 +33,8 @@ define(['phaser', 'objects/tree/branch'], function(Phaser, Branch) {
             this.draw();
         }, this);
 
+        this.onGrow = new Phaser.Signal();
+
         this.draw();
     }
 
@@ -46,6 +48,8 @@ define(['phaser', 'objects/tree/branch'], function(Phaser, Branch) {
         window.tree_graphics.clear();
         this.root.grow();
         this.root.updatePheromoneLevel();
+
+        this.onGrow.dispatch();
 
         return this;
     };
