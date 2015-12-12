@@ -1,7 +1,6 @@
 define([
         'phaser',
         'socketio',
-        'helper',
         'states/boot',
         'states/preload',
         'states/main_intro',
@@ -10,7 +9,6 @@ define([
         'states/gameplay'],
     function(Phaser,
              io,
-             helper,
              BootState,
              PreloadState,
              MainIntroState,
@@ -43,14 +41,6 @@ define([
 
             // initialize environment
             game.state.start('boot');
-            game.state.start('preload');
-
-            // skip game play menu for debugging
-            if( QueryString.skip_menu ) {
-                game.state.start('gameplay');
-            } else {
-                game.state.start('main-menu');
-            }
         }
     };
 

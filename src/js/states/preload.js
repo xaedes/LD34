@@ -1,6 +1,6 @@
 'use strict';
 
-define([], function() {
+define(['helper'], function(Helper) {
     function Preload() {}
 
     Preload.prototype = {
@@ -10,6 +10,12 @@ define([], function() {
         },
 
         create: function() {
+            // skip game play menu for debugging
+            if( Helper.QueryString.skip_menu ) {
+                game.state.start('gameplay');
+            } else {
+                game.state.start('main-menu');
+            }
         }
     };
 
