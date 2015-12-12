@@ -1,6 +1,6 @@
 'use strict';
 
-define(['phaser', 'objects/tree', 'helper'], function(Phaser, Tree, Helper) {
+define(['phaser', 'helper'], function(Phaser, Helper) {
     function Branch(game, parent, config) {
         // suprer constructor
         Phaser.Group.call(this, game, parent, 'branch', true, true, Phaser.Physics.ARCADE);
@@ -134,14 +134,22 @@ define(['phaser', 'objects/tree', 'helper'], function(Phaser, Tree, Helper) {
         var newConfig = Helper.clone(this.config);
         newConfig.length = this.game.rnd.realInRange(this.config.length * 0.25, this.config.length * 0.75);
 
-        var newBranch = new Branch(this.game, this, newConfig);
-        newBranch.children = this.children;
+        var newBranch = new Branch(this.game, this.parent, newConfig);
+        newBranch.children = [this];
 
-        this.children = [newBranch];
         this.config.length -= newConfig.length;
+        if ( this.parent ) {
+            if (this.parent.constructor.name == "Tree") {
+                this.parent.root = newBranch;
+            } else {
+                var i = this.parent.children.indexOf(this);
+                this.parent.children[i] = newBranch;
+            }
+        }
+        this.parent = newBranch;
 
-        this._update();
         newBranch._update();
+        this._update();
 
         return this;
     };
