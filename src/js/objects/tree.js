@@ -34,6 +34,7 @@ define(['phaser', 'objects/tree/branch'], function(Phaser, Branch) {
         }, this);
 
         this.onGrow = new Phaser.Signal();
+        this.onCut = new Phaser.Signal();
 
         this.draw();
     }
@@ -63,6 +64,8 @@ define(['phaser', 'objects/tree/branch'], function(Phaser, Branch) {
     Tree.prototype.cut = function(cutLine) {
         this.root.cut(cutLine);
         this.draw();
+        
+        this.onCut.dispatch();
     };
 
 
