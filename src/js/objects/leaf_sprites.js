@@ -31,7 +31,7 @@ define(['phaser', 'helper'], function(Phaser, Helper) {
             graphics.beginFill(0, 0);
             graphics.drawRect(0,0,width,height);
 
-            graphics.beginFill(color, 1);
+            graphics.beginFill(color, 0.6);
             graphics.drawPolygon(leaf);
 
             graphics.endFill();
@@ -66,11 +66,14 @@ define(['phaser', 'helper'], function(Phaser, Helper) {
 
     LeafSprites.prototype.treeGrow = function () {
         var stack = [this.tree.root];
+        this.target_tex.clear();
         while(stack.length > 0){
             var branch = stack.pop();
 
             this.leaf.frame = this.game.rnd.integerInRange(0,this.num_different_leafs);
-            this.target_tex.renderRawXY(this.leaf, branch.x, branch.y);
+            this.target_tex.renderRawXY(this.leaf, 
+                branch.x + Helper.randomNormal(this.game.rnd,0,10), 
+                branch.y + Helper.randomNormal(this.game.rnd,0,10));
             
             branch.children.forEach(function (child) {
                 stack.push(child);
