@@ -23,23 +23,21 @@ define(['phaser', 'objects/tree', 'helper'], function(Phaser, Tree, Helper) {
     // Public methods
     ////
     Branch.prototype.generateChildren = function (branch_config) {
-        //console.log( this.pheromone[2])
-            var config = {
-                depth: this.config.depth + 1,
-                angle: this.config.angle + this.game.rnd.integerInRange(-branch_config.radius, branch_config.radius),
-                length: this.game.rnd.realInRange(5, 20),
-                strength: this.game.rnd.realInRange(1, 4)
-            };
+        var config = {
+            angle: this.config.angle + this.game.rnd.integerInRange(-branch_config.radius, branch_config.radius),
+            length: this.game.rnd.realInRange(5, 20),
+            strength: this.game.rnd.realInRange(1, 4)
+        };
 
-            var branch = new Branch(this.game, this, config);
-            this.children.push(branch);
+        var branch = new Branch(this.game, this, config);
+        this.children.push(branch);
 
         return branch;
     };
 
     Branch.prototype.grow = function () {
-        this.config.length = this.config.length * (1 + Math.abs(Helper.randomNormal(this.game.rnd, this.pheromone[0], 0.1))); //* this.game.rnd.realInRange(1.0, 1.0 + .1 * Math.ceil(this.config.depth/3));
-        this.config.strength = this.config.strength * this.pheromone[1]; //* this.game.rnd.realInRange(1.01, 1.1);
+        this.config.length = this.config.length * (1 + Math.abs(Helper.randomNormal(this.game.rnd, this.pheromone[0], 0.1)));
+        this.config.strength = this.config.strength * this.pheromone[1];
 
         this._update();
         this.children.forEach(function (child) {
@@ -51,6 +49,10 @@ define(['phaser', 'objects/tree', 'helper'], function(Phaser, Tree, Helper) {
             this.generateChildren({
                 radius: 50
             });
+        }
+
+        if (this.config.length > 69 && this.game.rnd.realInRange(0, 1) > 0.0) {
+            this._split();
         }
 
         return this;
@@ -121,6 +123,27 @@ define(['phaser', 'objects/tree', 'helper'], function(Phaser, Tree, Helper) {
 
 
         return branch;
+    };
+
+    /**
+     * Split a branch into to random new branches
+     * @returns {Branch} self
+     * @private
+     */
+    Branch.prototype._split = function() {
+        var newConfig = Helper.clone(this.config);
+        newConfig.length = this.game.rnd.realInRange(this.config.length * 0.25, this.config.length * 0.75);
+
+        var newBranch = new Branch(this.game, this, newConfig);
+        newBranch.children = this.children;
+
+        this.children = [newBranch];
+        this.config.length -= newConfig.length;
+
+        this._update();
+        newBranch._update();
+
+        return this;
     };
 
     ////

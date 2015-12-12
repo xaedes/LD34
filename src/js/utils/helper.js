@@ -44,6 +44,15 @@ define(["phaser"], function(Phaser) {
             var colormap_bm = new Phaser.BitmapData("bm_colormap",this.colormap.width, this.colormap.height);
             colormap_bm.draw(this.colormap);
             return colormap_bm;
+        },
+
+        "clone": function clone(obj) {
+            if (null == obj || "object" != typeof obj) return obj;
+            var copy = obj.constructor();
+            for (var attr in obj) {
+                if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
+            }
+            return copy;
         }
     };
 });

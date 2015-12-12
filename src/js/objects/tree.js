@@ -16,10 +16,9 @@ define(['phaser', 'objects/tree/branch'], function(Phaser, Branch) {
             game,
             this,
             {
-                depth: 1,
                 angle: -90,
                 length: 30,
-                strength: 5,
+                strength: 5
             }
         );
         this.root.generateChildren({
