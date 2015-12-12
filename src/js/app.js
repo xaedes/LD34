@@ -30,6 +30,7 @@ define([
                 forceSetTimeOut: false
             };
             var game = new Phaser.Game(config);
+            window.game = game;
 
             // load all game states
             game.state.add('boot', BootState);
