@@ -1,8 +1,8 @@
 {
-  "name": "Tanks",
-  "version": "0.1.0",
-  "description": "Tanks!",
-  "author": "Wir",
+  "name": "LD34",
+  "version": "0.0.1",
+  "description": "LD34",
+  "author": "",
   "license": "MIT",
   "dependencies": {
     "http-server": "^0.8.5",
