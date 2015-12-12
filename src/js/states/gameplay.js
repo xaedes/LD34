@@ -1,17 +1,12 @@
 'use strict';
 
-define(['phaser'], 
-    function(Phaser) {
+define(['phaser', 'objects/tree'],
+    function(Phaser, Tree) {
     function GameplayState() {}
 
     GameplayState.prototype = {
         create: function() {
-            // add tank
-            // control tank with wasd and with arrows
-            // add mouse controlled bullseye
-            // click causes tank to shoot
-            // bullet flies in parable, height causes upscaling, simply use tween?
-            // add explosions when bullets land
+            this.tree = new Tree(this.game);
         },
 
         update: function() {
