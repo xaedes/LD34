@@ -39,10 +39,11 @@ define(["phaser"], function(Phaser) {
             return num;
 	    },
 
-        "BitmapDataFromImage": function (game, imageKey) {
-            var colormap = new Phaser.Image(this.game, 0, 0, "colormap");
-            var colormap_bm = new Phaser.BitmapData("bm_colormap",this.colormap.width, this.colormap.height);
-            colormap_bm.draw(this.colormap);
+         "BitmapDataFromImage": function (game, imageKey) {
+            var colormap = new Phaser.Image(game, 0, 0, "colormap");
+            var colormap_bm = new Phaser.BitmapData(game, "bm_colormap",colormap.width, colormap.height);
+            colormap_bm.draw(colormap);
+            colormap_bm.update();
             return colormap_bm;
         },
 
