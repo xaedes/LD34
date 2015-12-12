@@ -10,8 +10,6 @@ define([], function() {
         },
 
         create: function() {
-            // this.game.state.start('gameplay');
-            this.game.state.start('main-intro');
         }
     };
 

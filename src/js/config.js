@@ -7,7 +7,8 @@ require.config({
 
         // Libraries
         phaser: 'lib/phaser.debug',
-        socketio: '../../bower_components/socket.io-client/socket.io'
+        socketio: '../../bower_components/socket.io-client/socket.io',
+        helper: 'utils/helper'
     },
     // Sets the configuration for your third party scripts that are not AMD compatible
     shim: {
@@ -16,6 +17,9 @@ require.config({
         },
         socketio: {
             exports: 'io'
+        },
+        helper: {
+            exports: 'helper'
         }
     }
 });

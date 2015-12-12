@@ -11,8 +11,6 @@ define([], function() {
         create: function() {
             // setup game environment
             // scale, input etc..
-            
-            this.game.state.start('preload');
         }
     };
 

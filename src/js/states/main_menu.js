@@ -13,7 +13,7 @@ define(['phaser'], function(Phaser) {
             title_text.anchor.setTo(0.5, 0.5);
             title_text.wordWrap = true;
             title_text.wordWrapWidth = (0.95 * this.game.world.width);
-            title_text.alpha = 1
+            title_text.alpha = 1;
 
             var subtitle_text = this.game.add.text(0,210, 
                 "[press ENTER to start]", 
@@ -21,9 +21,9 @@ define(['phaser'], function(Phaser) {
             subtitle_text.anchor.setTo(0.5, 0.5);
             subtitle_text.wordWrap = true;
             subtitle_text.wordWrapWidth = (0.95 * this.game.world.width);
-            subtitle_text.alpha = 1
+            subtitle_text.alpha = 1;
 
-            menu.add(subtitle_text)
+            menu.add(subtitle_text);
             menu.add(title_text);
 
             menu.x = this.game.world.centerX;
@@ -57,7 +57,7 @@ define(['phaser'], function(Phaser) {
                 
                 tweenFadeOut.start();                
                 tweenMenuShrink.start();                
-            }, this)
+            }, this);
             selectionFeedback.start()
 
 
