@@ -1,33 +1,39 @@
 'use strict';
 
 define(['phaser', 'helper'], function(Phaser, Helper) {
-    function LeafSprites(game) {
+    function LeafSprites(game, tree) {
         this.game = game;
+        this.tree = tree;
+
+        this.tree.onGrow.add(this.treeGrow,this);
 
         var width = 32;
         var height = 32;
-        var n = 100;
+        this.num_different_leafs = 100;
 
         var graphics = this.game.add.graphics(0,0);
-        var bm = this.game.add.bitmapData(width * 10, height * 10);
+        var bm = this.game.add.bitmapData(width, height * this.num_different_leafs);
 
         this.colormap = Helper.BitmapDataFromImage(this.game, "colormap");
 
         var atlasData = { frames: [] };
-        for(var i=0;i<n;++i){
+        for(var i=0;i<this.num_different_leafs;++i){
             var leaf = this.generateLeaf(width, height, 0.25);
             var color = this.pickColor();
-            var x = Math.floor(i/10)*width;
-            var y = (i%10)*height;
+            // var x = Math.floor(i/10)*width;
+            // var y = (i%10)*height;
+            var x = 0;
+            var y = i*height;
             
             graphics.clear()
             graphics.lineStyle(0, color, 1);
-            graphics.beginFill(0, 1);
-            // leaf = new Phaser.Polygon([ new Phaser.Point(20, 0), new Phaser.Point(31, 10), new Phaser.Point(31, 20), new Phaser.Point(15, 20) ]);
+
+            graphics.beginFill(0, 0);
             graphics.drawRect(0,0,width,height);
+
             graphics.beginFill(color, 1);
             graphics.drawPolygon(leaf);
-            // graphics.drawCircle(10,10,16);
+
             graphics.endFill();
             graphics.update();
 
@@ -39,14 +45,38 @@ define(['phaser', 'helper'], function(Phaser, Helper) {
             atlasData.frames.push({ frame: { x: x, y: y, w: width, h: height }});
         }
         bm.update();
-        var texture = bm.generateTexture();
-        // call super constructor with our generated Texture
-        Phaser.Image.call(this, game, 0, 0, texture);
-
+        this.game.cache.addTextureAtlas("leafs", '', bm.canvas, atlasData, Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
         graphics.destroy();
+
+        // inspired from 
+        // http://laxvikinggames.blogspot.de/2015/01/build-dynamic-texture-atlas-in-phaser.html
+
+        // var texture = bm.generateTexture();
+        // call super constructor with our generated Texture
+        this.target_tex = this.game.add.renderTexture(this.game.width,this.game.height);
+        Phaser.Image.call(this, game, 0, 0, this.target_tex);
+
+        this.leaf = new Phaser.Sprite(game, 0, 0, "leafs");
+        this.leaf.animations.add("animation",null,60,true);
+        // this.leaf.animations.play("animation");
+
     }
 
     LeafSprites.prototype = Object.create(Phaser.Image.prototype);
+
+    LeafSprites.prototype.treeGrow = function () {
+        var stack = [this.tree.root];
+        while(stack.length > 0){
+            var branch = stack.pop();
+
+            this.leaf.frame = this.game.rnd.integerInRange(0,this.num_different_leafs);
+            this.target_tex.renderRawXY(this.leaf, branch.x, branch.y);
+            
+            branch.children.forEach(function (child) {
+                stack.push(child);
+            });
+        }
+    };
 
     LeafSprites.prototype.pickColor = function (width,height) {
         var x = this.game.rnd.integerInRange(0, this.colormap.width);
