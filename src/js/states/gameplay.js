@@ -14,10 +14,13 @@ define(['phaser', 'objects/tree', 'objects/leaf_sprites'],
             this.graphics = game.add.graphics(0, 0);
             this.cutLine = undefined;
 
+            this.game.stage.backgroundColor = "#89abd0";
+
         },
 
         update: function() {
             this.graphics.clear();
+
             if (this.game.input.mousePointer.isDown) {
                 if (this.cutLine) {
                     this.cutLine.end = this.game.input;
