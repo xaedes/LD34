@@ -8,7 +8,9 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         this.leafs = [new Leaf(
             Helper.randomNormal(this.game.rnd, 0, 1),
             Helper.randomNormal(this.game.rnd, 0, 1),
-            this.game.rnd.integer())];
+            this.game.rnd.integer(),
+            this.game.rnd.integer()
+            )];
         this.config = config;
         this.pheromone = [1, 1, 1];
 
