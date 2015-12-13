@@ -10,8 +10,8 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         this.tree.onCut.add(this.treeUpdate, this);
 
         // used to generate leaf points
-        this.leaf_width = 32;
-        this.leaf_height = 32;
+        this.leaf_width = 16;
+        this.leaf_height = 16;
 
         // as we want to draw more than one leaf per frame, we need a little bit more space
         // specify here how much
@@ -22,8 +22,8 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         this.frame_height = this.leaf_height + this.padding * 2;
 
         // factors to multiply normal(0,1) random variable with to get properly scaled random leaf displacement
-        this.leaf_displacement_x = this.leaf_width * 0.5;
-        this.leaf_displacement_y = this.leaf_height * 0.5;
+        this.leaf_displacement_x = this.leaf_width * 0.1;
+        this.leaf_displacement_y = this.leaf_height * 0.1;
 
         // how many leafs per frame?
         this.leafs_per_frame_min = 1;
