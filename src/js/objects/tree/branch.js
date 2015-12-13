@@ -2,9 +2,7 @@
 
 define(['phaser', 'helper'], function(Phaser, Helper) {
     function Branch(game, parent, config) {
-        // suprer constructor
-        Phaser.Group.call(this, game, parent, 'branch', true, true, Phaser.Physics.ARCADE);
-
+        this.game = game;
         this.parent = parent;
         this.children = [];
         this.config = config;
@@ -45,7 +43,7 @@ define(['phaser', 'helper'], function(Phaser, Helper) {
         });
 
         // add child branches, if branch is strength enough
-        if ( this.pheromone[2] >= this.game.rnd.realInRange(0, 1)) {
+        if ( this.pheromone[2] >= this.game.rnd.realInRange(0, 1) && 0.9/this.children.length >= this.game.rnd.realInRange(0,1)) {
             this.generateChildren({
                 radius: 50
             });
@@ -62,13 +60,13 @@ define(['phaser', 'helper'], function(Phaser, Helper) {
         var graphics = window.tree_graphics;
 
         // set a fill and line style
-        graphics.beginFill(0xFF3300);
+       // graphics.beginFill(0xFF3300);
         graphics.lineStyle(this.config.strength, 0xffd900, 1);
 
         // draw a shape
         graphics.moveTo(this.line.start.x, this.line.start.y);
         graphics.lineTo(this.line.end.x, this.line.end.y);
-        graphics.endFill();
+       // graphics.endFill();
 
         this.children.forEach(function (child) {
             child.draw();
@@ -100,7 +98,7 @@ define(['phaser', 'helper'], function(Phaser, Helper) {
 
             grow *= 0.02;
             strength *= 1.001;
-            branch *= 0.9;
+            branch *= 0.5;
 
             this.pheromone = [grow, strength, branch];
         }
