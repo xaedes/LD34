@@ -18,7 +18,7 @@ define(['phaser', 'objects/tree/branch'], function(Phaser, Branch) {
             {
                 angle: -90,
                 length: 15,
-                strength: 5
+                strength: 20
             }
         );
         this.root.generateChildren({

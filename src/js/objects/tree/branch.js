@@ -28,7 +28,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         var config = {
             angle: this.config.angle + this.game.rnd.integerInRange(-branch_config.radius, branch_config.radius),
             length: this.game.rnd.realInRange(5, 20),
-            strength: this.game.rnd.realInRange(1, this.config.strength)
+            strength: this.game.rnd.realInRange(4, this.config.strength)
         };
 
         var branch = new Branch(this.game, this, config);
@@ -69,13 +69,16 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         var graphics = window.tree_graphics;
 
         // set a fill and line style
-       // graphics.beginFill(0xFF3300);
-        graphics.lineStyle(this.config.strength * 4, 0x37220f, 1);
+        graphics.lineStyle(this.config.strength, 0x37220f, 1);
 
         // draw a shape
         graphics.moveTo(this.line.start.x, this.line.start.y);
         graphics.lineTo(this.line.end.x, this.line.end.y);
-       // graphics.endFill();
+
+        graphics.lineWidth = 0;
+        graphics.beginFill(0x37220f, 1);
+        graphics.drawCircle(this.line.end.x, this.line.end.y, this.config.strength * 0.5);
+        graphics.endFill();
 
         this.children.forEach(function (child) {
             child.draw();
