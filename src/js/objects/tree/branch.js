@@ -1,10 +1,14 @@
 'use strict';
 
-define(['phaser', 'helper'], function(Phaser, Helper) {
+define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) {
     function Branch(game, parent, config) {
         this.game = game;
         this.parent = parent;
         this.children = [];
+        this.leafs = [new Leaf(
+            Helper.randomNormal(this.game.rnd, 0, 10),
+            Helper.randomNormal(this.game.rnd, 0, 10),
+            this.game.rnd.integer())];
         this.config = config;
         this.pheromone = [1, 1, 1];
 

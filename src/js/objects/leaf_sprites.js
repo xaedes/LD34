@@ -70,11 +70,15 @@ define(['phaser', 'helper'], function(Phaser, Helper) {
         this.target_tex.clear();
         while(stack.length > 0){
             var branch = stack.pop();
+            var self = this;
+            branch.leafs.forEach(function(leaf){
 
-            this.leaf.frame = this.game.rnd.integerInRange(0,this.num_different_leafs);
-            this.target_tex.renderRawXY(this.leaf, 
-                branch.x + Helper.randomNormal(this.game.rnd,0,10), 
-                branch.y + Helper.randomNormal(this.game.rnd,0,10));
+                self.leaf.frame = leaf.idx % self.num_different_leafs;
+                self.target_tex.renderRawXY(self.leaf, 
+                    branch.x + leaf.x, 
+                    branch.y + leaf.y);
+            });
+
             
             branch.children.forEach(function (child) {
                 stack.push(child);
