@@ -11,7 +11,7 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
 
         // as we want to draw more than one leaf per frame, we need a little bit more space
         // specify here how much
-        this.padding = 16;
+        this.padding = 32;
 
         // size of actual drawing area 
         this.frame_width = this.leaf_width + this.padding * 2;
@@ -24,6 +24,13 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         // how many leafs per frame?
         this.leafs_per_frame_min = 6;
         this.leafs_per_frame_max = 12;
+
+        // rustling leaves animation paramaters
+        this.anim_len = 10;
+        this.rustling = 10;
+        this.color_rustling = 2;
+
+        this.leaf_alpha = 0.3;
 
         // how many frames
         this.num_frames = 100;
@@ -41,22 +48,17 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         var atlasData = {frames: []};
 
         // generate multiple leaf spriteframes for later drawing
-        for (var i = 0; i < this.num_frames; ++i) {
-            // clear graphics
-            graphics.clear();
-
-            // fill frame with black
-            graphics.lineStyle(0, color, 1);
-            graphics.beginFill(0, 0);
-            graphics.drawRect(0, 0, this.frame_width, this.frame_height);
-
-            // draw a bunch of leafs to the frame
+        for (var frame_idx = 0; frame_idx < this.num_frames; ++frame_idx) {
+            // generate a bunch of leaves
+            var leaves = [];
             var leafs_per_frame = this.game.rnd.integerInRange(this.leafs_per_frame_min,this.leafs_per_frame_max);
             for(var k = 0; k < leafs_per_frame; ++k) {
                 var rx = Helper.randomNormal(0, 1) * this.leaf_displacement_x;
                 var ry = Helper.randomNormal(0, 1) * this.leaf_displacement_y;
 
                 var leaf = this.generateLeaf(this.leaf_width, this.leaf_height, 0.25, this.padding + rx, this.padding + ry);
+                leaves.push(leaf);
+
                 var color = this.pickColor();
 
                 graphics.beginFill(color, 0.6);
@@ -65,19 +67,51 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
                 graphics.update();
             }
 
-            // flush operations
+            // draw each animation frame for rustling leaves
+            for(var anim_idx = 0; anim_idx < this.anim_len; ++anim_idx) {
 
-            // generate image from last drawn frame
-            var tex = graphics.generateTexture();
-            var img = new Phaser.Image(this.game, 0, 0, tex);
+                // clear graphics
+                graphics.clear();
 
-            // copy frame into bitmapdata buffer
-            var x = 0;
-            var y = i * this.frame_height;
-            bm.copy(img, 0, 0, this.frame_width, this.frame_height, x, y);
+                // fill frame with black
+                graphics.lineStyle(0, color, 1);
+                graphics.beginFill(0, 0);
+                graphics.drawRect(0, 0, this.frame_width, this.frame_height);
 
-            // save data for this frame in atlas
-            atlasData.frames.push({frame: {x: x, y: y, w: this.frame_width, h: this.frame_height}});
+                // draw a bunch of leafs to the frame
+                for(var k = 0; k < leaves.length; ++k) {
+                    var leaf,color;
+                    if (anim_idx == 0) {
+                        leaf = leaves[k].leaf;
+                        color = leaves[k].color;
+                    } else {
+                        // rustle leaf
+                        leaf = this.rustleLeaf(leaves[k].leaf);
+                        color = this.pickColor(
+                            leaves[k].cx+Helper.randomNormal(this.game.rnd,0,this.color_rustling),
+                            leaves[k].cy+Helper.randomNormal(this.game.rnd,0,this.color_rustling));
+                    }
+
+                    graphics.beginFill(color, this.leaf_alpha);
+                    graphics.drawPolygon(leaf);
+                    graphics.endFill();
+                }
+
+                // flush operations
+                graphics.update();
+
+                // generate image from last drawn frame
+                var tex = graphics.generateTexture();
+                var img = new Phaser.Image(this.game, 0, 0, tex);
+
+                // copy frame into bitmapdata buffer
+                var x = anim_idx * this.frame_width;
+                var y = frame_idx * this.frame_height;
+                bm.copy(img, 0, 0, this.frame_width, this.frame_height, x, y);
+
+                // save data for this frame in atlas
+                atlasData.frames.push({frame: {x: x, y: y, w: this.frame_width, h: this.frame_height}});
+            }
         }
 
         // flush operations (i don't think this is necessary)
@@ -89,22 +123,39 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         
         // create Sprite with generated spritesheet
         this.leaf = new Phaser.Sprite(game, 0, 0, "leafs");
-        this.leaf.animations.add("animation", null, 60, true);
         this.leaf.anchor.set(0.5);
+        // add animation for each frame 
+        var frames;
+        for (var frame_idx = 0; frame_idx < this.num_frames; ++frame_idx) {
+            frames = Phaser.ArrayUtils.numberArray(frame_idx*this.anim_len,(1+frame_idx)*this.anim_len-1);
+            this.leaf.animations.add("rustling-"+frame_idx, frames, 60, true);
+        }
 
-        // inspired from 
         // should be kept here for reference
+        // inspired from 
         // http://laxvikinggames.blogspot.de/2015/01/build-dynamic-texture-atlas-in-phaser.html
 
 
         // generate texture that fills complete screen, that we draw to
-        this.drawingTexture = this.game.add.renderTexture(this.game.width, this.game.height);
+        this.drawingTexture = this.game.add.renderTexture(this.game.width * this.anim_len, this.game.height);
+
+        frames = Phaser.ArrayUtils.numberArray(0,this.anim_len-1);
+        atlasData = {frames: []};
+        frames.forEach(function(anim_idx){
+            atlasData.frames.push({frame: {x: anim_idx * this.game.width, y: 0, w: this.game.width, h: this.game.height}});
+        },this);
+        // publish generated spritesheet (image data from bm.canvas, frame information from atlasData)
+        // this.game.cache.addTextureAtlas("leafs-complete", '', this.drawingTexture, atlasData, Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
 
         // call super constructor with our generated Texture
-        Phaser.Image.call(this, game, 0, 0, this.drawingTexture);
+        Phaser.Sprite.call(this, game, 0, 0, this.drawingTexture);
+        this.animations.loadFrameData(atlasData)
+        this.animations.add("rustling",null,10,true);
+        // this.animations.play("rustling");
+        this.frame = 0;
     }
 
-    LeafSprites.prototype = Object.create(Phaser.Image.prototype);
+    LeafSprites.prototype = Object.create(Phaser.Sprite.prototype);
 
     LeafSprites.prototype.pickColor = function () {
         // pick a color from a random pixel in colormap
@@ -116,6 +167,19 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
 
         return color;
     };
+
+    LeafSprites.prototype.rustleLeaf = function (leaf) {
+        var newPoints=[];
+        leaf.points.forEach(function(point){
+            var newPoint = {
+                x: point.x + Helper.randomNormal(this.game.rnd, 0, this.rustling),
+                y: point.y + Helper.randomNormal(this.game.rnd, 0, this.rustling)
+            };
+            newPoints.push(newPoint);
+        },this);
+        return new Phaser.Polygon(newPoints);
+    };
+
 
     LeafSprites.prototype.generateLeaf = function (width, height, minArea, x, y) {
         var leaf = null;

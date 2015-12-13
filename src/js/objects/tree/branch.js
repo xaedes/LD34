@@ -8,6 +8,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
 
         this.children = [];
         this.leafs = [];
+
         this.config = config;
         this.pheromone = [1, 1, 1];
 

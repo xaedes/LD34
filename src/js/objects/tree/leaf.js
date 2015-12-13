@@ -1,15 +1,17 @@
 'use strict';
 
 define([], function() {
-    function Leaf(branch, x, y, idx) {
+    function Leaf(branch, x, y, idx, numLeaves) {
         this.branch = branch;
         this.x = x;
         this.y = y;
         this.idx = idx;
         this.age = 0;
+        this.numLeaves = numLeaves;
 
         this.killed = false;
     }
+
     Leaf.prototype.constructor = Leaf;
 
     Leaf.prototype.draw = function (leafs) {
