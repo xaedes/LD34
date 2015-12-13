@@ -91,17 +91,18 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
             if (!leaf.killed) {
                 aliveLeafs.push(leaf);
             }
-        });
+
+            if (this.game.rnd.realInRange(0,1.0) > 0.6) {
+                leaf.numLeaves = Math.min(leaf.numLeaves+1, this.tree.leafs.leafs_per_frame);
+            }
+        }, this);
         this.leafs = aliveLeafs;
 
 
         // Generate new leaves
-        // TODO: In Funktion auslagern
         if (this.leafs.length / this.config.length < this.game.rnd.realInRange(0,0.1)) {
             this._addRandomLeaf();
         }
-
-
 
         this.config.year += 1;
 
@@ -266,7 +267,9 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
             this,
             p.x,
             p.y,
-            this.game.rnd.integer()));
+            this.game.rnd.integer(),
+            1
+        ));
         this.tree.leafDensity.add(this.line.end.x + p.x, this.line.end.y + p.y);
     };
 

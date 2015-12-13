@@ -15,7 +15,7 @@ define([], function() {
     Leaf.prototype.constructor = Leaf;
 
     Leaf.prototype.draw = function (leafs) {
-        leafs.leaf.frame = this.idx % leafs.num_frames;
+        leafs.leaf.frame = (this.idx % leafs.num_frames) * leafs.leafs_per_frame + this.numLeaves - 1;
         leafs.drawingTexture.renderRawXY(
             leafs.leaf,
             this.branch.line.end.x + this.x,
