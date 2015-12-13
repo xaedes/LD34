@@ -35,7 +35,7 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         var graphics = this.game.add.graphics(0, 0);
 
         // load colormap for color picking
-        this.colormap = Helper.BitmapDataFromImage(this.game, "colormap");
+        this.colormap = Helper.BitmapDataFromImage(this.game, "colormap_green");
 
         // prepare frame data
         var atlasData = {frames: []};
@@ -109,7 +109,10 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         // pick a color from a random pixel in colormap
         var x = this.game.rnd.integerInRange(0, this.colormap.width);
         var y = this.game.rnd.integerInRange(0, this.colormap.height);
-        var color = this.colormap.getPixel32(x, y);
+        var color = this.colormap.getPixelRGB(x, y);
+
+        color = color.r * 0x010000 + color.g * 0x000100 + color.b * 0x000001; // + color.a;
+
         return color;
     };
 
@@ -144,21 +147,6 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
             // the expected area is 0.25 * width * height
         } while (Math.abs(leaf.area) < minArea * width * height);
         return leaf;
-    };
-
-    LeafSprites.prototype.densityNear = function (x, y) {
-        var bm = Helper.BitmapDataFromTexture(this.game, this.drawingTexture);
-        bm.getPixel(x, y);
-        for(var i; i < 10; i++) {
-            var color = bm.getPixel(
-                Helper.randomNormal(x, this.frame_width * 0.2),
-                Helper.randomNormal(y, this.frame_height * 0.2)
-            );
-            console.log(color);
-        }
-
-
-        return 1;
     };
 
     return LeafSprites;

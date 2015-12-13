@@ -37,7 +37,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         // check if enough space is free
         var line = new Phaser.Line();
         line.fromAngle(this.x, this.y, config.angle);
-        if (this.tree.branchDensity.getLine(line) > 1.5) {
+        if (this.tree.branchDensity.getLine(line) > 4.5) {
             return undefined;
         }
 

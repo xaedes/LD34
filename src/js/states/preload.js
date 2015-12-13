@@ -8,6 +8,7 @@ define(['helper'], function(Helper) {
             // load all game assets
             // images, spritesheets, atlases, audio etc..
             this.load.image('colormap', 'assets/colormap_1.png');
+            this.load.image('colormap_green', 'assets/colormap_green.png');
 
         },
 
