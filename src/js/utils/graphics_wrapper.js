@@ -17,9 +17,6 @@ define(['phaser'], function(Phaser) {
         this.graphicsStack = [];
     }
 
-    //GraphicsWrapper.prototype = Object.create(Phaser.Group.prototype);
-    //GraphicsWrapper.prototype.constructor = GraphicsWrapper;
-
     GraphicsWrapper.prototype.clear = function () {
         this.graphics.forEach( function(g) {
             g.clear();
@@ -57,26 +54,57 @@ define(['phaser'], function(Phaser) {
         });
     };
 
+    GraphicsWrapper.prototype.beginFill = function (color, alpha) {
+        this._getLast(false).beginFill(color, alpha)
+    };
+
+    GraphicsWrapper.prototype.endFill = function () {
+        this._getLast(true).endFill()
+    };
+
     ////
     // Private methods
     ////
-    GraphicsWrapper.prototype._getLast = function () {
+    GraphicsWrapper.prototype._getLast = function (skipBoundCheck) {
+        var last = this.graphics[this.graphics.length-1];
+
+        if (skipBoundCheck) {
+            return last;
+        }
+
         if (this.graphics.length == 0 || this.graphics[this.graphics.length-1].graphicsData.length >= 800) {
             var newG = this.graphicsStack.pop();
             if (newG) {
                 this.graphics.push(newG)
             } else {
                 newG = new Phaser.Graphics(this.game, this.x, this.y);
+                if (last) { // inherit style from last graphics object
+                    newG.lineStyle(last.lineWidth, last.color, last.alpha);
+                    if (last.filling) {
+                        newG.beginFill(last.fillColor, last.fillAlpha);
+                    }
+                }
                 this.group.add(newG);
-
                 this.graphics.push(newG)
             }
 
             return newG;
         }
 
-        return this.graphics[this.graphics.length-1];
+        return last;
     };
+
+    ////
+    // Properties
+    ////
+    Object.defineProperty(GraphicsWrapper.prototype, "lineWidth", {
+        get: function () {
+            return this._getLast(true).lineWidth;
+        },
+        set: function (value) {
+            this._getLast(true).lineWidth = value;
+        }
+    });
 
     return GraphicsWrapper;
 });

@@ -61,40 +61,38 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper'], function(Pha
         var graphics = window.tree_graphics;
         graphics.clear();
 
-        //this.root.draw();
-
+        // draw branches
         var stack = [this.root];
         window.tree_graphics.moveTo(this.root.line.start.x, this.root.line.start.y);
-
         while(stack.length > 0) {
             var current = stack.pop();
             current.children.forEach( function(child) {
                 stack.push(child);
             });
 
-            window.tree_graphics.lineStyle(current.config.strength, 0x37220f, 1);
-            window.tree_graphics.lineTo(current.x, current.y);
+            graphics.lineStyle(current.config.strength, 0x37220f, 1);
+            graphics.lineTo(current.x, current.y);
 
             if (current.children.length == 0 && stack.length > 0) {
-                window.tree_graphics.moveTo(
+                graphics.moveTo(
                     stack[stack.length-1].parent.line.start.x, stack[stack.length-1].parent.line.start.y);
             }
         }
 
+        // draw joins between branches
         stack = [this.root];
-        window.tree_graphics.moveTo(this.root.line.start.x, this.root.line.start.y);
-
+        graphics.lineWidth = 0;
+        graphics.beginFill(0x37220f, 1);
+        graphics.moveTo(this.root.line.start.x, this.root.line.start.y);
         while(stack.length > 0) {
             current = stack.pop();
             current.children.forEach( function(child) {
                 stack.push(child);
             });
 
-           // graphics.lineWidth = 0;
-            //graphics.beginFill(0x37220f, 1);
-            graphics.drawCircle(current.line.end.x, current.line.end.y, current.config.strength * 0.25);
-            //graphics.endFill();
+            graphics.drawCircle(current.line.end.x, current.line.end.y, current.config.strength);
         }
+        graphics.endFill();
         return this;
     };
 
