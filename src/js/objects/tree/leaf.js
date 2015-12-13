@@ -11,8 +11,6 @@ define([], function() {
 
     Leaf.prototype.draw = function (leafs) {
         leafs.leaf.frame = this.idx % leafs.num_different_leafs;
-        var line = new Phaser.Line();
-        line.random
         leafs.target_tex.renderRawXY(
             leafs.leaf,
             this.branch.x + this.x,

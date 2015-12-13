@@ -128,6 +128,13 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
     Branch.prototype.cut = function(cutLine) {
         var intersect = this.line.intersects(cutLine);
         if (intersect) {
+            this.children.forEach(function(child) {
+                var p = child.line.random();
+                window.tree.leafEmitter.x = p.x;
+                window.tree.leafEmitter.y = p.y;
+                window.tree.leafEmitter.start(true, 20000, null, 10);
+            }, this);
+
             this.children = [];
             var dx = intersect.x - this.line.start.x;
             var dy = intersect.y - this.line.start.y;

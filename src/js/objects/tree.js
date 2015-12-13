@@ -8,6 +8,7 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
         this._x = game.width / 2;
         this._y = game.height;
         window.tree_graphics = new GraphicsWrapper(game, 0, 0);
+        window.tree = this;
 
         this.root = new Branch(
             game,
@@ -55,7 +56,31 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
 
         // Initial draw call
         this.draw();
+
+
+        //// Leaf emitter
+        var leafFrames = [];
+        for (var i = 0; i < this.leafs.num_different_leafs; i++) {
+            leafFrames.push(i);
+        }
+
+        this.leafEmitter = this.game.add.emitter(0, 0, 10000);
+        this.leafEmitter.makeParticles('leafs', leafFrames);
+        this.leafEmitter.maxParticleScale = 1.6;
+        this.leafEmitter.minParticleScale = 0.9;
+        this.leafEmitter.setYSpeed(-5, 20);
+        this.leafEmitter.setXSpeed(-20, 20);
+        this.leafEmitter.gravity = 30;
+        this.leafEmitter.minRotation = 0;
+        this.leafEmitter.maxRotation = 40;
     }
+
+    Tree.prototype.particleBurst = function (pointer) {
+
+        //  Position the emitter where the mouse/touch event was
+
+
+    };
 
     Tree.prototype = Object.create(Phaser.Group.prototype);
     Tree.prototype.constructor = Tree;
