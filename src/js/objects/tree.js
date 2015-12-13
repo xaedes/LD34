@@ -104,7 +104,6 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
 
         // draw branches
         var stack = [this.root];
-        graphics.moveTo(this.root.line.start.x, this.root.line.start.y);
         while(stack.length > 0) {
             var current = stack.pop();
             current.children.forEach( function(child) {
@@ -125,30 +124,21 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
         graphics.lineWidth = 0;
         graphics.beginFill(0x37220f, 1);
         graphics.moveTo(this.root.line.start.x, this.root.line.start.y);
-        while(stack.length > 0) {
-            current = stack.pop();
-            current.children.forEach( function(child) {
-                stack.push(child);
-            });
-
-            graphics.drawCircle(current.line.end.x, current.line.end.y, current.config.strength);
-        }
+        this.traverseBranches(function(branch){
+            graphics.drawCircle(
+                branch.line.end.x, 
+                branch.line.end.y, 
+                branch.config.strength);
+        }, this);
         graphics.endFill();
 
         // draw leaves
-        var self = this;
-        this.leafs.target_tex.clear();
-        stack = [this.root];
-        while(stack.length > 0) {
-            current = stack.pop();
-            current.children.forEach( function(child) {
-                stack.push(child);
-            });
-
-            current.leafs.forEach(function(leaf) {
-                leaf.draw(self.leafs);
-            });
-        }
+        this.leafs.drawingTexture.clear();
+        this.traverseBranches(function(branch){
+            branch.leafs.forEach(function(leaf) {
+                leaf.draw(this.leafs);
+            }, this);
+        }, this);
 
         return this;
     };
