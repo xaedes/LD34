@@ -14,7 +14,7 @@ define([], function() {
         leafs.drawingTexture.renderRawXY(
             leafs.leaf,
             this.branch.x + this.x * leafs.leaf_displacement_x,
-            this.branch.y + this.y * leafs.leaf_displacement_x);
+            this.branch.y + this.y * leafs.leaf_displacement_y);
     };
 
     return Leaf;
