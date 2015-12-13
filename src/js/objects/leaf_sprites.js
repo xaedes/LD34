@@ -4,9 +4,9 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
     function LeafSprites(game, tree) {
         this.game = game;
         this.tree = tree;
-        
-        var width = 32;
-        var height = 32;
+
+        var width = 16;
+        var height = 16;
         this.num_different_leafs = 100;
 
         var graphics = this.game.add.graphics(0, 0);

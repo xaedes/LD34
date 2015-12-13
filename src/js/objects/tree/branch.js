@@ -29,17 +29,23 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         var config = {
             angle: this.config.angle + this.game.rnd.integerInRange(-branch_config.radius, branch_config.radius),
             length: this.game.rnd.realInRange(5, 20),
-            strength: this.game.rnd.realInRange(4, this.config.strength)
+            strength: this.game.rnd.realInRange(4, this.config.strength),
+            year: 0
         };
 
-        var branch = new Branch(this.game, this, config);
-        this.children.push(branch);
+        //if (config.angle > (-220 - this.game.rnd.integerInRange(-10, 90)) &&
+        //    config.angle < (40 + this.game.rnd.integerInRange(-10, 90))) {
+
+            var branch = new Branch(this.game, this, config);
+            this.children.push(branch);
+        //}
+
 
         return branch;
     };
 
     Branch.prototype.grow = function () {
-        this.config.length = this.config.length + 10*(Math.abs(Helper.randomNormal(this.game.rnd, this.pheromone[0], 0.1)));
+        this.config.length = this.config.length + (20 * (Math.abs(Helper.randomNormal(this.game.rnd, this.pheromone[0], 0.1))) / (1+(this.config.year)/25));
         this.config.strength = this.config.strength * this.pheromone[1];
 
         this._update();
@@ -48,7 +54,13 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         });
 
         // add child branches, if branch is strength enough
-        if ( this.pheromone[2] >= this.game.rnd.realInRange(0, 1) && 0.7/this.children.length >= this.game.rnd.realInRange(0,1)) {
+        if ( this.pheromone[2] >= this.game.rnd.realInRange(0, 1) &&
+            0.7/this.children.length >= this.game.rnd.realInRange(0,1) &&
+            this.config.year > this.game.rnd.integerInRange(1, 3)
+            //&& (this.config.length * this.config.strength) / this.pheromone[3] < 0.9
+            //&& this.pheromone[3] < (this.config.length * this.config.strength)
+        ) {
+
             this.generateChildren({
                 radius: 50
             });
@@ -58,24 +70,27 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
             this._split();
         }
 
+        this.config.year += 1;
+
         return this;
     };
 
     /**
      * Updates the pheromone level of this specific branch
      *
-     * @returns {number[]} Pheromone levels for this branch (grow, strength, branch)
+     * @returns {number[]} Pheromone levels for this branch (grow, strength, branch, weight)
      */
     Branch.prototype.updatePheromoneLevel = function () {
         if (this.children.length == 0) {
-            this.pheromone = [1, 1, 1];
+            this.pheromone = [1, 1, 1, (this.config.length * this.config.strength)];
         } else {
-            var grow = 0, strength = 0, branch = 0;
+            var grow = 0, strength = 0, branch = 0, weight = 0;
             this.children.forEach(function (child) {
                 var childPheromone = child.updatePheromoneLevel();
                 grow += childPheromone[0];
                 strength += childPheromone[1];
                 branch += childPheromone[2];
+                weight += childPheromone[3];
             });
 
             grow /= this.children.length;
@@ -86,7 +101,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
             strength *= 1.001;
             branch *= 0.5;
 
-            this.pheromone = [grow, strength, branch];
+            this.pheromone = [grow, strength, branch, weight];
         }
 
         return this.pheromone;

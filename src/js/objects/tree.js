@@ -15,7 +15,8 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
             {
                 angle: -90,
                 length: 15,
-                strength: 20
+                strength: 20,
+                year: 10,
             }
         );
         this.root.generateChildren({
