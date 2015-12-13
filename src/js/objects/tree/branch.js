@@ -38,7 +38,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
     };
 
     Branch.prototype.grow = function () {
-        this.config.length = this.config.length * (1 + Math.abs(Helper.randomNormal(this.game.rnd, this.pheromone[0], 0.1)));
+        this.config.length = this.config.length + 10*(Math.abs(Helper.randomNormal(this.game.rnd, this.pheromone[0], 0.1)));
         this.config.strength = this.config.strength * this.pheromone[1];
 
         this._update();
@@ -72,7 +72,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         graphics.lineStyle(this.config.strength, 0x37220f, 1);
 
         // draw a shape
-        graphics.moveTo(this.line.start.x, this.line.start.y);
+        //graphics.moveTo(this.line.start.x, this.line.start.y);
         graphics.lineTo(this.line.end.x, this.line.end.y);
 
         graphics.lineWidth = 0;
@@ -80,9 +80,9 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         graphics.drawCircle(this.line.end.x, this.line.end.y, this.config.strength * 0.5);
         graphics.endFill();
 
-        this.children.forEach(function (child) {
-            child.draw();
-        });
+        //this.children.forEach(function (child) {
+        //    child.draw();
+        //});
 
         return this;
     };
@@ -108,7 +108,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
             strength /= this.children.length;
             branch /= this.children.length;
 
-            grow *= 0.02;
+            grow *= 0.2;
             strength *= 1.001;
             branch *= 0.5;
 
