@@ -28,7 +28,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
     Branch.prototype.generateChildren = function (branch_config) {
         var config = {
             angle: this.config.angle + this.game.rnd.integerInRange(-branch_config.radius, branch_config.radius),
-            length: this.game.rnd.realInRange(5, 20),
+            length: this.game.rnd.realInRange(1, 3),
             strength: this.game.rnd.realInRange(4, this.config.strength),
             year: 0
         };
@@ -45,8 +45,8 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
     };
 
     Branch.prototype.grow = function () {
-        this.config.length = this.config.length + (20 * (Math.abs(Helper.randomNormal(this.game.rnd, this.pheromone[0], 0.1))) / (1+(this.config.year)/25));
-        this.config.strength = this.config.strength * this.pheromone[1];
+        this.config.length += 12 * (Math.abs(Helper.randomNormal(this.game.rnd, this.pheromone[0], 0.1))) / (1+(this.config.year)/5);
+        this.config.strength += (this.pheromone[1] - 1)  / (1+(this.config.year)/5);
 
         this._update();
         this.children.forEach(function (child) {
@@ -57,6 +57,8 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         if ( this.pheromone[2] >= this.game.rnd.realInRange(0, 1) &&
             0.7/this.children.length >= this.game.rnd.realInRange(0,1) &&
             this.config.year > this.game.rnd.integerInRange(1, 3)
+        && this._areParentsStrongEnough()
+        && this.config.length / this.children.length > 5
             //&& (this.config.length * this.config.strength) / this.pheromone[3] < 0.9
             //&& this.pheromone[3] < (this.config.length * this.config.strength)
         ) {
@@ -97,9 +99,9 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
             strength /= this.children.length;
             branch /= this.children.length;
 
-            grow *= 0.2;
-            strength *= 1.001;
-            branch *= 0.5;
+            grow *= 0.012;
+            strength *= 1.1;
+            branch *= 0.4;
 
             this.pheromone = [grow, strength, branch, weight];
         }
@@ -180,6 +182,21 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         this._update();
 
         return this;
+    };
+
+    Branch.prototype._areParentsStrongEnough = function() {
+        var myWeight = this.config.strength * this.config.length;
+        var childWeight = this.pheromone[3];
+
+        if (!this.parent.config) { // root branch
+            return true;
+        }
+
+        if (myWeight * 2 <= childWeight) {
+            return false;
+        } else {
+            return this.parent._areParentsStrongEnough();
+        }
     };
 
     ////
