@@ -1,6 +1,6 @@
 'use strict';
 
-define(['phaser', 'objects/tree/branch'], function(Phaser, Branch) {
+define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper'], function(Phaser, Branch, GraphicsWrapper) {
     function Tree(game, x, y) {
         // super constructor
         Phaser.Group.call(this, game, game.world, 'tree', true, true, Phaser.Physics.ARCADE);
@@ -8,8 +8,11 @@ define(['phaser', 'objects/tree/branch'], function(Phaser, Branch) {
         this._x = game.width / 2;
         this._y = game.height;
 
-        var graphics = game.add.graphics(0, 0);
+        var graphics = new GraphicsWrapper(game, 0, 0);
+        //var graphics = game.add.graphics(0, 0);
         window.tree_graphics = graphics;
+
+        //this.add( new Phaser.Graphics(this.game, this._x, this._y));
 
 
         this.root = new Branch(
@@ -87,16 +90,11 @@ define(['phaser', 'objects/tree/branch'], function(Phaser, Branch) {
                 stack.push(child);
             });
 
-            graphics.lineWidth = 0;
-            graphics.beginFill(0x37220f, 1);
-            graphics.drawCircle(current.line.end.x, current.line.end.y, current.config.strength * 0.5);
-            graphics.endFill();
+           // graphics.lineWidth = 0;
+            //graphics.beginFill(0x37220f, 1);
+            graphics.drawCircle(current.line.end.x, current.line.end.y, current.config.strength * 0.25);
+            //graphics.endFill();
         }
-
-        // draw a shape
-        //graphics.moveTo(this.line.start.x, this.line.start.y);
-        //graphics.lineTo(this.line.end.x, this.line.end.y);
-
         return this;
     };
 
