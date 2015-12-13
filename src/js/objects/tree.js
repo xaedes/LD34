@@ -53,11 +53,6 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
         this.leafs = new LeafSprites(this.game, this);
         this.game.world.add(this.leafs);
 
-
-        // Initial draw call
-        this.draw();
-
-
         //// Leaf emitter
         var leafFrames = [];
         for (var i = 0; i < this.leafs.num_different_leafs; i++) {
@@ -74,14 +69,28 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
         this.leafEmitter.gravity = 30;
         this.leafEmitter.minRotation = 0;
         this.leafEmitter.maxRotation = 40;
+
+        this.leafWindEmitter = this.game.add.emitter(0, 0, 500);
+        this.leafWindEmitter.makeParticles('leafs', leafFrames);
+        this.leafWindEmitter.maxParticleScale = 1.6;
+        this.leafWindEmitter.minParticleScale = 0.9;
+        this.leafWindEmitter.setYSpeed(-15, 20);
+        this.leafWindEmitter.setXSpeed(0, 80);
+        this.leafWindEmitter.gravity = 5;
+        this.leafWindEmitter.minRotation = 0;
+        this.leafWindEmitter.maxRotation = 40;
+        this.leafWindEmitter.angularDrag = 10;
+        this.leafWindEmitter.setAlpha(1, 0.2, 10000);
+        this.leafWindEmitter.height = game.world.height/2;
+        this.leafWindEmitter.emitX = game.world.width/2;
+        this.leafWindEmitter.emitY = game.world.height/2;
+
+        this.leafWindEmitter.start(false, 10000, 1000);
+
+        // Initial draw call
+        this.draw();
     }
 
-    Tree.prototype.particleBurst = function (pointer) {
-
-        //  Position the emitter where the mouse/touch event was
-
-
-    };
 
     Tree.prototype = Object.create(Phaser.Group.prototype);
     Tree.prototype.constructor = Tree;
@@ -102,6 +111,8 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
         var graphics = window.tree_graphics;
         graphics.clear();
 
+        this._treeHeight = 0;
+
         // draw branches
         var stack = [this.root];
         graphics.moveTo(this.root.line.start.x, this.root.line.start.y);
@@ -110,6 +121,10 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
             current.children.forEach( function(child) {
                 stack.push(child);
             });
+
+            if (this.game.world.height - current.x >  this._treeHeight) {
+                this._treeHeight = this.game.world.height - current.x
+            }
 
             graphics.lineStyle(current.config.strength, 0x37220f, 1);
             graphics.lineTo(current.x, current.y);
@@ -149,6 +164,11 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
                 leaf.draw(self.leafs);
             });
         }
+
+        // update wind leave emitter
+        console.log(this._treeHeight);
+        this.leafWindEmitter.height = this._treeHeight * 0.75;
+        this.leafWindEmitter.emitY = (game.world.height - this._treeHeight/2);
 
         return this;
     };
