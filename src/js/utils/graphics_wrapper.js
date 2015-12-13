@@ -10,28 +10,26 @@ define(['phaser'], function(Phaser) {
         this.group = game.add.group(parent);
 
         this.game = game;
-        this.x = x;
-        this.y = y;
+        this._x = x;
+        this._y = y;
+
+        this._movePosition = new Phaser.Point(0, 0);
 
         this.graphics = [];
-        this.graphicsStack = [];
     }
 
     GraphicsWrapper.prototype.clear = function () {
         this.graphics.forEach( function(g) {
             g.clear();
         });
-
-        while (this.graphics.length) {
-            var g = this.graphics.pop();
-            this.graphicsStack.push(g);
-        }
     };
 
     GraphicsWrapper.prototype.moveTo = function (x, y) {
         if (y === undefined) {
+            this._movePosition = x;
             this._getLast().moveTo(x.x, x.y);
         } else {
+            this._movePosition.set(x, y);
             this._getLast().moveTo(x, y);
         }
     };
@@ -72,21 +70,18 @@ define(['phaser'], function(Phaser) {
             return last;
         }
 
-        if (this.graphics.length == 0 || this.graphics[this.graphics.length-1].graphicsData.length >= 800) {
-            var newG = this.graphicsStack.pop();
-            if (newG) {
-                this.graphics.push(newG)
-            } else {
-                newG = new Phaser.Graphics(this.game, this.x, this.y);
-                if (last) { // inherit style from last graphics object
-                    newG.lineStyle(last.lineWidth, last.color, last.alpha);
-                    if (last.filling) {
-                        newG.beginFill(last.fillColor, last.fillAlpha);
-                    }
+        if (this.graphics.length == 0 || last.graphicsData.length >= 800) {
+            var newG = new Phaser.Graphics(this.game, this._x, this._y);
+            if (last) { // inherit style from last graphics object
+                newG.lineStyle(last.lineWidth, last.color, last.alpha);
+                newG.moveTo(this._movePosition.x, this._movePosition.y);
+                if (last.filling) {
+                    newG.beginFill(last.fillColor, last.fillAlpha);
                 }
-                this.group.add(newG);
-                this.graphics.push(newG)
             }
+            this.group.add(newG);
+            this.graphics.push(newG);
+
 
             return newG;
         }
