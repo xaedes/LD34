@@ -28,7 +28,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         var config = {
             angle: this.config.angle + this.game.rnd.integerInRange(-branch_config.radius, branch_config.radius),
             length: this.game.rnd.realInRange(5, 20),
-            strength: this.game.rnd.realInRange(1, 4)
+            strength: this.game.rnd.realInRange(1, this.config.strength)
         };
 
         var branch = new Branch(this.game, this, config);
