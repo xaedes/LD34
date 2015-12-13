@@ -160,6 +160,17 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
         this.onCut.dispatch();
     };
 
+    Tree.prototype.traverseBranches = function(callback,callbackThis) {
+        var stack = [this.root];
+        while(stack.length > 0){
+            var current = stack.pop();
+            current.children.forEach(function(child){
+                stack.push(child);
+            });
+            callback.call(callbackThis, current);
+        }
+    };
+
 
     ////
     // Properties
