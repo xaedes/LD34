@@ -148,7 +148,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         var p = this.line.random();
         window.tree.leafEmitter.x = p.x;
         window.tree.leafEmitter.y = p.y;
-        window.tree.leafEmitter.start(true, 20000, null, (this.config.length / 15) + 1);
+        window.tree.leafEmitter.start(true, 5000, null, (this.config.length / 15) + 1);
 
         this.children.forEach(function(child) {
             child.dropLeavesAnimation();

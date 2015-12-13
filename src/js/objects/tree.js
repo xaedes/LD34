@@ -64,12 +64,13 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
             leafFrames.push(i);
         }
 
-        this.leafEmitter = this.game.add.emitter(0, 0, 10000);
+        this.leafEmitter = this.game.add.emitter(0, 0, 5000);
         this.leafEmitter.makeParticles('leafs', leafFrames);
         this.leafEmitter.maxParticleScale = 1.6;
         this.leafEmitter.minParticleScale = 0.9;
         this.leafEmitter.setYSpeed(-5, 20);
         this.leafEmitter.setXSpeed(-20, 20);
+        this.leafEmitter.setAlpha(1, 0, 5000);
         this.leafEmitter.gravity = 30;
         this.leafEmitter.minRotation = 0;
         this.leafEmitter.maxRotation = 40;
