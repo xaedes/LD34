@@ -1,6 +1,6 @@
 'use strict';
 
-define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf_sprites'], function(Phaser, Branch, GraphicsWrapper, LeafSprites) {
+define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf_sprites', 'objects/grid2d'], function(Phaser, Branch, GraphicsWrapper, LeafSprites, Grid2d) {
     function Tree(game, x, y) {
         // super constructor
         Phaser.Group.call(this, game, game.world, 'tree', true, true, Phaser.Physics.ARCADE);
@@ -9,16 +9,32 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
         this._y = game.height;
         window.tree_graphics = new GraphicsWrapper(game, 0, 0);
         window.tree = this;
+        this.tree = this;
+
+        // Heatmap for leaves
+        this.leafDensity = new Grid2d(this.game, 16, 9);
+        this.branchDensity = new Grid2d(this.game, 16, 9);
+
+
+        // Signals
+        this.onGrow = new Phaser.Signal();
+        this.onCut = new Phaser.Signal();
+
+        // Intialize leaf rendering
+        this.leafs = new LeafSprites(this.game, this);
+        this.game.world.add(this.leafs);
 
         this.root = new Branch(
             game,
             this,
             {
+                level: 0,
                 angle: -90,
                 length: 15,
                 strength: 20,
                 year: 10
-            }
+            },
+            this
         );
         this.root.generateChildren({
             branches: [2, 6],
@@ -44,14 +60,6 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
             }
 
         }, this);
-
-        // Signals
-        this.onGrow = new Phaser.Signal();
-        this.onCut = new Phaser.Signal();
-
-        // Intialize leaf rendering
-        this.leafs = new LeafSprites(this.game, this);
-        this.game.world.add(this.leafs);
 
         //// Leaf emitter
         var leafFrames = [];
@@ -114,6 +122,7 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
         this._treeHeight = 0;
 
         // draw branches
+        this.branchDensity.clear();
         var stack = [this.root];
         graphics.moveTo(this.root.line.start.x, this.root.line.start.y);
         while(stack.length > 0) {
@@ -133,6 +142,8 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
                 graphics.moveTo(
                     stack[stack.length-1].parent.line.start.x, stack[stack.length-1].parent.line.start.y);
             }
+
+            this.branchDensity.addLine(current.line);
         }
 
         // draw joins between branches
@@ -142,22 +153,25 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
         graphics.moveTo(this.root.line.start.x, this.root.line.start.y);
         this.traverseBranches(function(branch){
             graphics.drawCircle(
-                branch.line.end.x, 
-                branch.line.end.y, 
+                branch.line.end.x,
+                branch.line.end.y,
                 branch.config.strength);
         }, this);
         graphics.endFill();
 
         // draw leaves
+        this.leafDensity.clear();
         this.leafs.drawingTexture.clear();
-        this.traverseBranches(function(branch){
+        this.traverseBranches(function(branch) {
             branch.leafs.forEach(function(leaf) {
                 leaf.draw(this.leafs);
+
+                // update leafDensity
+                this.leafDensity.add(branch.line.end.x + leaf.x, branch.line.end.y + leaf.y);
             }, this);
         }, this);
 
         // update wind leave emitter
-        console.log(this._treeHeight);
         this.leafWindEmitter.height = this._treeHeight * 0.75;
         this.leafWindEmitter.emitY = (game.world.height - this._treeHeight/2);
 
@@ -167,7 +181,7 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
     Tree.prototype.cut = function(cutLine) {
         this.root.cut(cutLine);
         this.draw();
-        
+
         this.onCut.dispatch();
     };
 

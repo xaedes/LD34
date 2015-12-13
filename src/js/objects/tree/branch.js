@@ -4,18 +4,18 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
     function Branch(game, parent, config) {
         this.game = game;
         this.parent = parent;
+        this.tree = this.parent.tree;
+
         this.children = [];
-        this.leafs = [new Leaf(
-            this,
-            Helper.randomNormal(this.game.rnd, 0, 1),
-            Helper.randomNormal(this.game.rnd, 0, 1),
-            this.game.rnd.integer())];
+        this.leafs = [];
         this.config = config;
         this.pheromone = [1, 1, 1];
 
         this.line = new Phaser.Line();
 
         this._update();
+
+        this._addRandomLeaf();
     }
 
     Branch.prototype = Object.create(Phaser.Group.prototype);
@@ -27,25 +27,36 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
     ////
     Branch.prototype.generateChildren = function (branch_config) {
         var config = {
+            level: this.config.level + 1,
             angle: this.config.angle + this.game.rnd.integerInRange(-branch_config.radius, branch_config.radius),
             length: this.game.rnd.realInRange(1, 3),
             strength: this.game.rnd.realInRange(4, this.config.strength),
             year: 0
         };
 
-        //if (config.angle > (-220 - this.game.rnd.integerInRange(-10, 90)) &&
-        //    config.angle < (40 + this.game.rnd.integerInRange(-10, 90))) {
+        // check if enough space is free
+        var line = new Phaser.Line();
+        line.fromAngle(this.x, this.y, config.angle);
+        if (this.tree.branchDensity.getLine(line) > 1.5) {
+            return undefined;
+        }
+
+        if (config.angle > (-220 - this.game.rnd.integerInRange(-10, 90)) &&
+            config.angle < (40 + this.game.rnd.integerInRange(-10, 90))) {
 
             var branch = new Branch(this.game, this, config);
             this.children.push(branch);
-        //}
 
+            this.tree.branchDensity.addLine(line);
 
-        return branch;
+            return branch;
+        }
+
+        return undefined;
     };
 
     Branch.prototype.grow = function () {
-        this.config.length += 12 * (Math.abs(Helper.randomNormal(this.game.rnd, this.pheromone[0], 0.1))) / (1+(this.config.year)/5);
+        this.config.length += 12 * (Math.abs(Helper.randomNormal(this.pheromone[0], 0.1))) / (1+(this.config.year)/5);
         this.config.strength += (this.pheromone[1] - 1)  / (1+(this.config.year)/5);
 
         this._update();
@@ -55,10 +66,10 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
 
         // add child branches, if branch is strength enough
         if ( this.pheromone[2] >= this.game.rnd.realInRange(0, 1) &&
-            0.7/this.children.length >= this.game.rnd.realInRange(0,1) &&
+            0.7 / this.children.length >= this.game.rnd.realInRange(0,1) &&
             this.config.year > this.game.rnd.integerInRange(1, 3)
-        && this._areParentsStrongEnough()
-        && this.config.length / this.children.length > 5
+            && this._areParentsStrongEnough()
+            && this.config.length / this.children.length > 5
             //&& (this.config.length * this.config.strength) / this.pheromone[3] < 0.9
             //&& this.pheromone[3] < (this.config.length * this.config.strength)
         ) {
@@ -68,20 +79,28 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
             });
         }
 
-        if (this.config.length > 60 && this.game.rnd.realInRange(0, 1) > 0.3) {
+        if (this.config.length > 60 && this.game.rnd.realInRange(0, 1) > 0.6) {
             this._split();
         }
 
-        if (this.leafs.length / this.config.length < this.game.rnd.realInRange(0,0.3)) {
-            var p = this.line.random();
-            p.x -= this.line.start.x;
-            p.y -= this.line.start.y;
-            this.leafs.push(new Leaf(
-                this,
-                p.x + Helper.randomNormal(this.game.rnd, 0, 3) * 2,
-                p.y + Helper.randomNormal(this.game.rnd, 0, 3) * 2,
-                this.game.rnd.integer()));
+        // Update leaves
+        var aliveLeafs = [];
+        this.leafs.forEach(function(leaf) {
+            leaf.update();
+            if (!leaf.killed) {
+                aliveLeafs.push(leaf);
+            }
+        });
+        this.leafs = aliveLeafs;
+
+
+        // Generate new leaves
+        // TODO: In Funktion auslagern
+        if (this.leafs.length / this.config.length < this.game.rnd.realInRange(0,0.1)) {
+            this._addRandomLeaf();
         }
+
+
 
         this.config.year += 1;
 
@@ -210,6 +229,11 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         return this;
     };
 
+    /**
+     *
+     * @returns {boolean}
+     * @private
+     */
     Branch.prototype._areParentsStrongEnough = function() {
         var myWeight = this.config.strength * this.config.length;
         var childWeight = this.pheromone[3];
@@ -218,11 +242,31 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
             return true;
         }
 
-        if (myWeight * Helper.randomNormal(this.game.rnd, 3, 1.0) <= childWeight) {
+        if (myWeight * Helper.randomNormal(3, 1.0) <= childWeight) {
             return false;
         } else {
             return this.parent._areParentsStrongEnough();
         }
+    };
+
+    Branch.prototype._addRandomLeaf = function() {
+        var p = Helper.randomPointOnLine(this.line, 0.0, 0.9);
+        p.x -= this.line.end.x;
+        p.y -= this.line.end.y;
+
+        p.x += Helper.randomNormal(0, 1) * this.tree.leafs.leaf_displacement_x;
+        p.y += Helper.randomNormal(0, 1) * this.tree.leafs.leaf_displacement_y;
+
+        if (this.tree.leafDensity.get(this.line.end.x + p.x, this.line.end.y + p.y) >= 10) {
+            return;
+        }
+
+        this.leafs.push(new Leaf(
+            this,
+            p.x,
+            p.y,
+            this.game.rnd.integer()));
+        this.tree.leafDensity.add(this.line.end.x + p.x, this.line.end.y + p.y);
     };
 
     ////

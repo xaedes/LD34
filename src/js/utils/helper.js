@@ -26,10 +26,10 @@ define(["phaser"], function(Phaser) {
         }(),
 
 
-	    "randomNormal": function (rnd, mean, std) {
+	    "randomNormal": function (mean, std) {
             var num = 0;
             for (var i = 0; i < 12; i++) {
-                num += rnd.realInRange(0.0, 1.0)
+                num += Math.random()
             }
 
             num -= 6;
@@ -40,11 +40,29 @@ define(["phaser"], function(Phaser) {
 	    },
 
          "BitmapDataFromImage": function (game, imageKey) {
-            var colormap = new Phaser.Image(game, 0, 0, "colormap");
-            var colormap_bm = new Phaser.BitmapData(game, "bm_colormap",colormap.width, colormap.height);
+            var colormap = new Phaser.Image(game, 0, 0, imageKey);
+            var colormap_bm = new Phaser.BitmapData(game, "bm_"+imageKey, colormap.width, colormap.height);
             colormap_bm.draw(colormap);
             colormap_bm.update();
             return colormap_bm;
+        },
+
+        "BitmapDataFromTexture": function (game, texture) {
+            var colormap = new Phaser.Image(game, 0, 0, texture);
+            var colormap_bm = new Phaser.BitmapData(game, "bm_krtszt", colormap.width, colormap.height);
+            colormap_bm.draw(colormap);
+            colormap_bm.update();
+            return colormap_bm;
+        },
+
+        "randomPointOnLine": function(line, min, max) {
+            var out = new Phaser.Point();
+            var t = Math.random() * (max - min) + min;
+
+            out.x = line.start.x + t * (line.end.x - line.start.x);
+            out.y = line.start.y + t * (line.end.y - line.start.y);
+
+            return out;
         },
 
         "clone": function clone(obj) {

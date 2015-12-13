@@ -5,10 +5,6 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         this.game = game;
         this.tree = tree;
 
-        // update leaf drawing when tree updates
-        this.tree.onGrow.add(this.treeUpdate, this);
-        this.tree.onCut.add(this.treeUpdate, this);
-
         // used to generate leaf points
         this.leaf_width = 16;
         this.leaf_height = 16;
@@ -22,12 +18,12 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         this.frame_height = this.leaf_height + this.padding * 2;
 
         // factors to multiply normal(0,1) random variable with to get properly scaled random leaf displacement
-        this.leaf_displacement_x = this.leaf_width * 0.1;
-        this.leaf_displacement_y = this.leaf_height * 0.1;
+        this.leaf_displacement_x = this.leaf_width * 0.6;
+        this.leaf_displacement_y = this.leaf_height * 0.6;
 
         // how many leafs per frame?
-        this.leafs_per_frame_min = 1;
-        this.leafs_per_frame_max = 1;
+        this.leafs_per_frame_min = 6;
+        this.leafs_per_frame_max = 12;
 
         // how many frames
         this.num_frames = 100;
@@ -57,8 +53,8 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
             // draw a bunch of leafs to the frame
             var leafs_per_frame = this.game.rnd.integerInRange(this.leafs_per_frame_min,this.leafs_per_frame_max);
             for(var k = 0; k < leafs_per_frame; ++k) {
-                var rx = Helper.randomNormal(this.game.rnd, 0, 1) * this.leaf_displacement_x;
-                var ry = Helper.randomNormal(this.game.rnd, 0, 1) * this.leaf_displacement_y;
+                var rx = Helper.randomNormal(0, 1) * this.leaf_displacement_x;
+                var ry = Helper.randomNormal(0, 1) * this.leaf_displacement_y;
                 var leaf = this.generateLeaf(this.leaf_width, this.leaf_height, 0.25, this.padding + rx, this.padding + ry);
                 var color = this.pickColor();
 
@@ -109,21 +105,6 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
 
     LeafSprites.prototype = Object.create(Phaser.Image.prototype);
 
-    LeafSprites.prototype.treeUpdate = function () {
-        // clear 
-        this.drawingTexture.clear();
-
-        // draw leafs of each branch
-        this.tree.traverseBranches(function(branch){
-            branch.leafs.forEach(function (leaf) {
-                this.leaf.frame = leaf.idx % this.num_frames;
-                this.drawingTexture.renderRawXY(this.leaf,
-                    branch.x + leaf.x * this.leaf_displacement_x,
-                    branch.y + leaf.y * this.leaf_displacement_y);
-            },this);
-        }, this);
-    };
-
     LeafSprites.prototype.pickColor = function () {
         // pick a color from a random pixel in colormap
         var x = this.game.rnd.integerInRange(0, this.colormap.width);
@@ -163,6 +144,21 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
             // the expected area is 0.25 * width * height
         } while (Math.abs(leaf.area) < minArea * width * height);
         return leaf;
+    };
+
+    LeafSprites.prototype.densityNear = function (x, y) {
+        var bm = Helper.BitmapDataFromTexture(this.game, this.drawingTexture);
+        bm.getPixel(x, y);
+        for(var i; i < 10; i++) {
+            var color = bm.getPixel(
+                Helper.randomNormal(x, this.frame_width * 0.2),
+                Helper.randomNormal(y, this.frame_height * 0.2)
+            );
+            console.log(color);
+        }
+
+
+        return 1;
     };
 
     return LeafSprites;
