@@ -6,6 +6,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         this.parent = parent;
         this.children = [];
         this.leafs = [new Leaf(
+            this,
             Helper.randomNormal(this.game.rnd, 0, 10),
             Helper.randomNormal(this.game.rnd, 0, 10),
             this.game.rnd.integer())];

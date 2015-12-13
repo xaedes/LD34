@@ -70,7 +70,7 @@ define(['phaser'], function(Phaser) {
             return last;
         }
 
-        if (this.graphics.length == 0 || last.graphicsData.length >= 800) {
+        if (this.graphics.length == 0 || last.graphicsData.length >= 750) {
             var newG = new Phaser.Graphics(this.game, this._x, this._y);
             if (last) { // inherit style from last graphics object
                 newG.lineStyle(last.lineWidth, last.color, last.alpha);

@@ -4,10 +4,7 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
     function LeafSprites(game, tree) {
         this.game = game;
         this.tree = tree;
-
-        this.tree.onGrow.add(this.treeUpdate, this);
-        this.tree.onCut.add(this.treeUpdate, this);
-
+        
         var width = 32;
         var height = 32;
         this.num_different_leafs = 100;
@@ -60,31 +57,10 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         this.leaf = new Phaser.Sprite(game, 0, 0, "leafs");
         this.leaf.animations.add("animation", null, 60, true);
         // this.leaf.animations.play("animation");
-
     }
 
     LeafSprites.prototype = Object.create(Phaser.Image.prototype);
 
-    LeafSprites.prototype.treeUpdate = function () {
-        var stack = [this.tree.root];
-        this.target_tex.clear();
-        while (stack.length > 0) {
-            var branch = stack.pop();
-            var self = this;
-            branch.leafs.forEach(function (leaf) {
-
-                self.leaf.frame = leaf.idx % self.num_different_leafs;
-                self.target_tex.renderRawXY(self.leaf,
-                    branch.x + leaf.x,
-                    branch.y + leaf.y);
-            });
-
-
-            branch.children.forEach(function (child) {
-                stack.push(child);
-            });
-        }
-    };
 
     LeafSprites.prototype.pickColor = function (width, height) {
         var x = this.game.rnd.integerInRange(0, this.colormap.width);

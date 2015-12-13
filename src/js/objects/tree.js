@@ -1,19 +1,13 @@
 'use strict';
 
-define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper'], function(Phaser, Branch, GraphicsWrapper) {
+define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf_sprites'], function(Phaser, Branch, GraphicsWrapper, LeafSprites) {
     function Tree(game, x, y) {
         // super constructor
         Phaser.Group.call(this, game, game.world, 'tree', true, true, Phaser.Physics.ARCADE);
 
         this._x = game.width / 2;
         this._y = game.height;
-
-        var graphics = new GraphicsWrapper(game, 0, 0);
-        //var graphics = game.add.graphics(0, 0);
-        window.tree_graphics = graphics;
-
-        //this.add( new Phaser.Graphics(this.game, this._x, this._y));
-
+        window.tree_graphics = new GraphicsWrapper(game, 0, 0);
 
         this.root = new Branch(
             game,
@@ -36,9 +30,16 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper'], function(Pha
             this.draw();
         }, this);
 
+        // Signals
         this.onGrow = new Phaser.Signal();
         this.onCut = new Phaser.Signal();
 
+        // Intialize leaf rendering
+        this.leafs = new LeafSprites(this.game, this);
+        this.game.world.add(this.leafs);
+
+
+        // Initial draw call
         this.draw();
     }
 
@@ -63,7 +64,7 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper'], function(Pha
 
         // draw branches
         var stack = [this.root];
-        window.tree_graphics.moveTo(this.root.line.start.x, this.root.line.start.y);
+        graphics.moveTo(this.root.line.start.x, this.root.line.start.y);
         while(stack.length > 0) {
             var current = stack.pop();
             current.children.forEach( function(child) {
@@ -93,6 +94,22 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper'], function(Pha
             graphics.drawCircle(current.line.end.x, current.line.end.y, current.config.strength);
         }
         graphics.endFill();
+
+        // draw leaves
+        var self = this;
+        this.leafs.target_tex.clear();
+        stack = [this.root];
+        while(stack.length > 0) {
+            current = stack.pop();
+            current.children.forEach( function(child) {
+                stack.push(child);
+            });
+
+            current.leafs.forEach(function(leaf) {
+                leaf.draw(self.leafs);
+            });
+        }
+
         return this;
     };
 

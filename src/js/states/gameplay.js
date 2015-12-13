@@ -1,15 +1,13 @@
 'use strict';
 
-define(['phaser', 'objects/tree', 'objects/leaf_sprites'],
-    function(Phaser, Tree, LeafSprites) {
+define(['phaser', 'objects/tree'],
+    function(Phaser, Tree) {
 
     function GameplayState() {}
 
     GameplayState.prototype = {
         create: function() {
             this.tree = new Tree(this.game);
-            this.leafs = new LeafSprites(this.game, this.tree);
-            this.game.world.add(this.leafs);
 
             this.graphics = game.add.graphics(0, 0);
             this.cutLine = undefined;
