@@ -72,7 +72,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
             this._split();
         }
 
-        if (this.game.rnd.realInRange(0, 1) > 0.3) {
+        if (this.leafs.length / this.config.length < this.game.rnd.realInRange(0,0.3)) {
             var p = this.line.random();
             p.x -= this.line.start.x;
             p.y -= this.line.start.y;
@@ -82,7 +82,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
                 p.y + Helper.randomNormal(this.game.rnd, 0, 3) * 2,
                 this.game.rnd.integer()));
         }
-        
+
         this.config.year += 1;
 
         return this;
