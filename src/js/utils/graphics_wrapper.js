@@ -16,12 +16,16 @@ define(['phaser'], function(Phaser) {
         this._movePosition = new Phaser.Point(0, 0);
 
         this.graphics = [];
+        this.unused = [];
     }
 
     GraphicsWrapper.prototype.clear = function () {
-        this.graphics.forEach( function(g) {
+        while(this.graphics.length) {
+            var g = this.graphics.pop();
             g.clear();
-        });
+
+            this.unused.push(g);
+        }
     };
 
     GraphicsWrapper.prototype.moveTo = function (x, y) {
@@ -71,7 +75,12 @@ define(['phaser'], function(Phaser) {
         }
 
         if (this.graphics.length == 0 || last.graphicsData.length >= 750) {
-            var newG = new Phaser.Graphics(this.game, this._x, this._y);
+            var newG;
+            if (this.unused.length) {
+                newG = this.unused.pop();
+            } else {
+                newG = new Phaser.Graphics(this.game, this._x, this._y);
+            }
             if (last) { // inherit style from last graphics object
                 newG.lineStyle(last.lineWidth, last.color, last.alpha);
                 newG.moveTo(this._movePosition.x, this._movePosition.y);
