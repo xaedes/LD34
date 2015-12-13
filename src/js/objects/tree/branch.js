@@ -43,13 +43,13 @@ define(['phaser', 'helper'], function(Phaser, Helper) {
         });
 
         // add child branches, if branch is strength enough
-        if ( this.pheromone[2] >= this.game.rnd.realInRange(0, 1) && 0.9/this.children.length >= this.game.rnd.realInRange(0,1)) {
+        if ( this.pheromone[2] >= this.game.rnd.realInRange(0, 1) && 0.7/this.children.length >= this.game.rnd.realInRange(0,1)) {
             this.generateChildren({
                 radius: 50
             });
         }
 
-        if (this.config.length > 69 && this.game.rnd.realInRange(0, 1) > 0.0) {
+        if (this.config.length > 60 && this.game.rnd.realInRange(0, 1) > 0.3) {
             this._split();
         }
 
@@ -66,7 +66,7 @@ define(['phaser', 'helper'], function(Phaser, Helper) {
 
         // set a fill and line style
        // graphics.beginFill(0xFF3300);
-        graphics.lineStyle(this.config.strength, 0xffd900, 1);
+        graphics.lineStyle(this.config.strength * 4, 0x37220f, 1);
 
         // draw a shape
         graphics.moveTo(this.line.start.x, this.line.start.y);

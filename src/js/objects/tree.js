@@ -17,7 +17,7 @@ define(['phaser', 'objects/tree/branch'], function(Phaser, Branch) {
             this,
             {
                 angle: -90,
-                length: 30,
+                length: 15,
                 strength: 5
             }
         );
