@@ -26,8 +26,8 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         this.leaf_displacement_y = this.leaf_height * 0.5;
 
         // how many leafs per frame?
-        this.leafs_per_frame_min = 2;
-        this.leafs_per_frame_max = 7;
+        this.leafs_per_frame_min = 1;
+        this.leafs_per_frame_max = 1;
 
         // how many frames
         this.num_frames = 100;

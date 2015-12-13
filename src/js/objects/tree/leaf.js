@@ -10,11 +10,11 @@ define([], function() {
     Leaf.prototype.constructor = Leaf;
 
     Leaf.prototype.draw = function (leafs) {
-        leafs.leaf.frame = this.idx % leafs.num_different_leafs;
-        leafs.target_tex.renderRawXY(
+        leafs.leaf.frame = this.idx % leafs.num_frames;
+        leafs.drawingTexture.renderRawXY(
             leafs.leaf,
-            this.branch.x + this.x,
-            this.branch.y + this.y);
+            this.branch.x + this.x * leafs.leaf_displacement_x,
+            this.branch.y + this.y * leafs.leaf_displacement_x);
     };
 
     return Leaf;
