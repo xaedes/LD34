@@ -55,6 +55,7 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
             for(var k = 0; k < leafs_per_frame; ++k) {
                 var rx = Helper.randomNormal(0, 1) * this.leaf_displacement_x;
                 var ry = Helper.randomNormal(0, 1) * this.leaf_displacement_y;
+
                 var leaf = this.generateLeaf(this.leaf_width, this.leaf_height, 0.25, this.padding + rx, this.padding + ry);
                 var color = this.pickColor();
 
