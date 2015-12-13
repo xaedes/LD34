@@ -16,7 +16,7 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
                 angle: -90,
                 length: 15,
                 strength: 20,
-                year: 10,
+                year: 10
             }
         );
         this.root.generateChildren({
@@ -24,11 +24,24 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
             radius: 50
         });
 
+        this.growModus = 0;
+
         this.gKey = this.game.input.keyboard.addKey(Phaser.Keyboard.G);
+        var self = this;
         this.gKey.onDown.add(function() {
-            console.log("Grow!");
-            this.grow();
-            this.draw();
+            if (!this.growModus) {
+                this.growModus = 1;
+                var intervalID = setInterval(function() {
+                    self.grow();
+                    self.draw();
+
+                    if (++self.growModus === 15) {
+                        self.growModus = 0;
+                        window.clearInterval(intervalID);
+                    }
+                }, 25);
+            }
+
         }, this);
 
         // Signals
