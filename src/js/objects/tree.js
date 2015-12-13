@@ -104,6 +104,7 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
 
         // draw branches
         var stack = [this.root];
+        graphics.moveTo(this.root.line.start.x, this.root.line.start.y);
         while(stack.length > 0) {
             var current = stack.pop();
             current.children.forEach( function(child) {
