@@ -43,7 +43,6 @@ define(['phaser', 'objects/tree/branch'], function(Phaser, Branch) {
     // Public methods
     ////
     Tree.prototype.grow = function () {
-        window.tree_graphics.clear();
         this.root.grow();
         this.root.updatePheromoneLevel();
 
@@ -51,9 +50,15 @@ define(['phaser', 'objects/tree/branch'], function(Phaser, Branch) {
     };
 
     Tree.prototype.draw = function () {
+        window.tree_graphics.clear();
         this.root.draw();
 
         return this;
+    };
+
+    Tree.prototype.cut = function(cutLine) {
+        this.root.cut(cutLine);
+        this.draw();
     };
 
 

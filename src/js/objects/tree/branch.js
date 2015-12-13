@@ -56,6 +56,11 @@ define(['phaser', 'helper'], function(Phaser, Helper) {
         return this;
     };
 
+    /**
+     * Draw the current branch and then all children branches
+     *
+     * @returns {Branch}
+     */
     Branch.prototype.draw = function () {
         var graphics = window.tree_graphics;
 
@@ -106,37 +111,65 @@ define(['phaser', 'helper'], function(Phaser, Helper) {
         return this.pheromone;
     };
 
+    /**
+     * Prunes the tree at the given cut line
+     *
+     * @param cutLine
+     */
+    Branch.prototype.cut = function(cutLine) {
+        var intersect = this.line.intersects(cutLine);
+        if (intersect) {
+            this.children = [];
+            var dx = intersect.x - this.line.start.x;
+            var dy = intersect.y - this.line.start.y;
+            this._split(true, Math.sqrt(dx*dx + dy*dy));
+        } else {
+            this.children.forEach(function(child) {
+                child.cut(cutLine);
+            });
+
+        }
+    };
+
 
     ////
     // Private methods
     ////
+
+    /**
+     * Updates position of current branch according to parent branch's position
+     * @private
+     */
     Branch.prototype._update = function() {
         this.line.fromAngle(this.parent.x, this.parent.y, (this.config.angle) * (Math.PI/180), this.config.length);
         this.x = this.line.end.x;
         this.y = this.line.end.y;
     };
 
-    Branch.prototype._addBranch = function (parent) {
-        var branch = new Branch(this.game, parent);
-
-
-        return branch;
-    };
-
     /**
-     * Split a branch into to random new branches
+     * Split a branch into to new branches.
+     *
+     * If not cut position defined, choose a random one.
+     *
+     * @param discardChildren if true, then discard all childrens
+     * @param position (optional) as length one line
+     *
      * @returns {Branch} self
      * @private
      */
-    Branch.prototype._split = function() {
+
+    Branch.prototype._split = function(discardChildren, position) {
         var newConfig = Helper.clone(this.config);
-        newConfig.length = this.game.rnd.realInRange(this.config.length * 0.25, this.config.length * 0.75);
+        newConfig.length = position || this.game.rnd.realInRange(this.config.length * 0.25, this.config.length * 0.75);
 
         var newBranch = new Branch(this.game, this.parent, newConfig);
-        newBranch.children = [this];
+
+        if (!discardChildren) {
+            newBranch.children = [this];
+        }
 
         this.config.length -= newConfig.length;
-        if ( this.parent ) {
+        if (this.parent) {
             if (this.parent.constructor.name == "Tree") {
                 this.parent.root = newBranch;
             } else {
@@ -145,6 +178,7 @@ define(['phaser', 'helper'], function(Phaser, Helper) {
             }
         }
         this.parent = newBranch;
+
 
         newBranch._update();
         this._update();
