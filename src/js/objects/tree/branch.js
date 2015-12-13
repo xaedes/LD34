@@ -6,9 +6,8 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         this.parent = parent;
         this.children = [];
         this.leafs = [new Leaf(
-            this,
-            Helper.randomNormal(this.game.rnd, 0, 10),
-            Helper.randomNormal(this.game.rnd, 0, 10),
+            Helper.randomNormal(this.game.rnd, 0, 1),
+            Helper.randomNormal(this.game.rnd, 0, 1),
             this.game.rnd.integer())];
         this.config = config;
         this.pheromone = [1, 1, 1];
