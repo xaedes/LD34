@@ -203,7 +203,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
             return true;
         }
 
-        if (myWeight * 2 <= childWeight) {
+        if (myWeight * Helper.randomNormal(this.game.rnd, 3, 1.0) <= childWeight) {
             return false;
         } else {
             return this.parent._areParentsStrongEnough();
