@@ -47,6 +47,7 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
 
         this.gKey = this.game.input.keyboard.addKey(Phaser.Keyboard.G);
         var self = this;
+        // ToDo: move into gameplay
         this.gKey.onDown.add(function() {
             if (!this.growModus) {
                 this.growModus = 1;
@@ -58,7 +59,7 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
                         self.growModus = 0;
                         window.clearInterval(intervalID);
                     }
-                }, 25);
+                }, 1000 / 25);
             }
 
         }, this);
@@ -147,6 +148,7 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
 
             this.branchDensity.addLine(current.line);
         }
+        graphics.flush();
 
         // draw joins between branches
         stack = [this.root];
