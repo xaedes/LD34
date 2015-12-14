@@ -27,12 +27,13 @@ define(["phaser"], function(Phaser) {
 
 
 	    "randomNormal": function (mean, std) {
+            var n = 12;
             var num = 0;
-            for (var i = 0; i < 12; i++) {
+            for (var i = 0; i < n; i++) {
                 num += Math.random()
             }
 
-            num -= 6;
+            num -= n/2;
             num *= std;
             num += mean;
 
