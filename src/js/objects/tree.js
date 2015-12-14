@@ -1,10 +1,12 @@
 'use strict';
 
-define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf_sprites', 'objects/grid2d'], function(Phaser, Branch, GraphicsWrapper, LeafSprites, Grid2d) {
+define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf_sprites', 'objects/grid2d'],
+    function(Phaser, Genome, Branch, GraphicsWrapper, LeafSprites, Grid2d) {
+
     function Tree(game, x, y) {
         // super constructor
         Phaser.Group.call(this, game, game.world, 'tree', true, true, Phaser.Physics.ARCADE);
-
+        this.genome = new Genome();
         this._x = game.width / 2;
         this._y = game.height;
         window.tree_graphics = new GraphicsWrapper(game, 0, 0);
@@ -12,9 +14,12 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
         this.tree = this;
 
         // Heatmap for leaves
-        this.leafDensity = new Grid2d(this.game, 16, 9);
-        this.branchDensity = new Grid2d(this.game, 16, 9);
-
+        this.leafDensity = new Grid2d(this.game, 
+            Math.floor(game.width / this.genome.leafDensityResolution),
+            Math.floor(game.height / this.genome.leafDensityResolution));
+        this.branchDensity = new Grid2d(this.game, 
+            Math.floor(game.width / this.genome.branchDensityResolution),
+            Math.floor(game.height / this.genome.branchDensityResolution));
 
         // Signals
         this.onGrow = new Phaser.Signal();
@@ -29,18 +34,17 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
             this,
             {
                 level: 0,
-                angle: -90,
-                original_angle: -90,
-                length: 15,
-                strength: 20,
-                year: 10,
+                angle: this.genome.startBranchConfig.angle,
+                original_angle: this.genome.startBranchConfig.angle,
+                length: this.genome.startBranchConfig.length,
+                strength: this.genome.startBranchConfig.strength,
+                year: this.genome.startBranchConfig.year,
                 angle_rate: 0
             },
             this
         );
         this.root.generateChildren({
-            branches: [2, 6],
-            radius: 50
+            radius: this.genome.startBranchConfig.radius
         });
 
         this.growModus = 0;
@@ -55,11 +59,11 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
                     self.grow();
                     self.draw();
 
-                    if (++self.growModus === 1500) {
+                    if (++self.growModus === self.genome.growCount) {
                         self.growModus = 0;
                         window.clearInterval(intervalID);
                     }
-                }, 1000 / 25);
+                }, this.genome.growRate);
             }
 
         }, this);
@@ -148,7 +152,6 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
 
             this.branchDensity.addLine(current.line);
         }
-        graphics.flush();
 
         // draw joins between branches
         stack = [this.root];
