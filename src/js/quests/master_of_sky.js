@@ -3,8 +3,8 @@
 define(['phaser', 'helper', 'objects/tree_evaluator', 'quests/quest'], 
     function(Phaser,Helper,TreeEvaluator,Quest) {
         
-    function MasterOfSky(game, treeEvaluator, tier) {
-        Quest.call(this, game, treeEvaluator, tier);
+    function MasterOfSky(game, gui, treeEvaluator, tier) {
+        Quest.call(this, game, gui, treeEvaluator, tier);
         this.title = tier+".Master Of Sky";
         this.secondsToWin = 10;
         this.max_tier = 100;
@@ -24,6 +24,7 @@ define(['phaser', 'helper', 'objects/tree_evaluator', 'quests/quest'],
     MasterOfSky.prototype.constructor = MasterOfSky;
     MasterOfSky.prototype.evaluate = function() {
         this.evaluation = this.treeEvaluator.leafsInUpperHalf(this.size,this.condition);
+        this.success = this.evaluation.success;
         return this.evaluation.success;
     };
     MasterOfSky.prototype.progressMsg = function() {

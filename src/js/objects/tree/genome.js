@@ -189,7 +189,7 @@ define(['phaser','helper'], function(Phaser,Helper) {
             _addRandomLeaf: {
                 randomPointMin: 0,
                 randomPointMax: 0.9,
-                maxLeafDensity: 10
+                maxLeafDensity: 5
             }
         };
     }

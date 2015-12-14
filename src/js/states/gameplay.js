@@ -1,8 +1,8 @@
 'use strict';
 
-define(['phaser', 'objects/tree', 'objects/tree_evaluator', 
+define(['phaser', 'objects/tree', 'objects/tree_evaluator', 'gui/quest_gui',
     'quests/master_of_earth', 'quests/master_of_sky', 'quests/master_of_zero'],
-    function(Phaser, Tree, TreeEvaluator, MasterOfEarth, MasterOfSky, MasterOfZero) {
+    function(Phaser, Tree, TreeEvaluator, QuestGui, MasterOfEarth, MasterOfSky, MasterOfZero) {
 
     function GameplayState() {}
 
@@ -11,11 +11,12 @@ define(['phaser', 'objects/tree', 'objects/tree_evaluator',
             this.tree = new Tree(this.game);
             this.treeEvaluator = new TreeEvaluator(this.tree);
 
+            this.quest_gui = new QuestGui(this.game);
             this.quests = [];
             for(var i=1;i<100;i++){
-                this.quests.push(new MasterOfEarth(this.game, this.treeEvaluator, i));
-                this.quests.push(new MasterOfSky(this.game, this.treeEvaluator, i));
-                this.quests.push(new MasterOfZero(this.game, this.treeEvaluator, i));
+                this.quests.push(new MasterOfEarth(this.game, this.quest_gui, this.treeEvaluator, i));
+                this.quests.push(new MasterOfSky(this.game, this.quest_gui, this.treeEvaluator, i));
+                this.quests.push(new MasterOfZero(this.game, this.quest_gui, this.treeEvaluator, i));
             }
             this.quest_counter = 0;
             this.currentQuest = this.quests[this.quest_counter];
@@ -55,11 +56,11 @@ define(['phaser', 'objects/tree', 'objects/tree_evaluator',
 
             this.currentQuest.update();
             if (this.currentQuest.won) {
-                this.currentQuest.fadeOut(function(){
-                    this.currentQuest.cleanUp();
+                // this.currentQuest.fadeOut(function(){
                     this.quest_counter++;
                     this.currentQuest = this.quests[this.quest_counter];
-                },this);
+                    this.currentQuest.activate();
+                // },this);
             }
 
             if (this.game.input.mousePointer.isDown) {

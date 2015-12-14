@@ -3,8 +3,8 @@
 define(['phaser', 'helper', 'objects/tree_evaluator', 'quests/quest'], 
     function(Phaser,Helper,TreeEvaluator,Quest) {
 
-    function MasterOfZero(game, treeEvaluator, tier) {
-        Quest.call(this, game, treeEvaluator, tier);
+    function MasterOfZero(game, gui, treeEvaluator, tier) {
+        Quest.call(this, game, gui, treeEvaluator, tier);
         this.title = tier+".Master Of Zero";
         this.secondsToWin = 10;
         this.max_tier = 100;
@@ -24,6 +24,7 @@ define(['phaser', 'helper', 'objects/tree_evaluator', 'quests/quest'],
     MasterOfZero.prototype.constructor = MasterOfZero;
     MasterOfZero.prototype.evaluate = function() {
         this.evaluation = this.treeEvaluator.leafsHoleInTheMiddle(this.size,this.condition);
+        this.success = this.evaluation.success;
         return this.evaluation.success;
     };
     MasterOfZero.prototype.progressMsg = function() {
