@@ -76,6 +76,9 @@ define(["phaser"], function(Phaser) {
         },
         "gainFilter": function(value, otherValue, gain) {
             return value * gain + (1-gain) * otherValue;
+        },
+        "lerp": function(from, to, x) {
+            return (to-from)*x+to;
         }
     };
 });
