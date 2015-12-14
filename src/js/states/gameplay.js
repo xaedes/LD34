@@ -12,9 +12,9 @@ define(['phaser', 'objects/tree', 'objects/tree_evaluator',
             this.treeEvaluator = new TreeEvaluator(this.tree);
 
             this.quests = [];
-            this.quests.push(new MasterOfEarth(this.game, this.treeEvaluator));
-            this.quests.push(new MasterOfSky(this.game, this.treeEvaluator));
-            this.quests.push(new MasterOfZero(this.game, this.treeEvaluator));
+            this.quests.push(new MasterOfEarth(this.game, this.treeEvaluator, 1));
+            this.quests.push(new MasterOfSky(this.game, this.treeEvaluator, 1));
+            this.quests.push(new MasterOfZero(this.game, this.treeEvaluator, 1));
             this.currentQuest = this.quests[0];
 
             this.graphics = game.add.graphics(0, 0);

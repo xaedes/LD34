@@ -1,7 +1,7 @@
 'use strict';
 
 define(['phaser', 'objects/tree_evaluator'], function(Phaser,TreeEvaluator) {
-    function Quest(game,treeEvaluator) {
+    function Quest(game,treeEvaluator,tier) {
         this.treeEvaluator = treeEvaluator;
         this.game = game;
         this.questText = null;
@@ -11,6 +11,9 @@ define(['phaser', 'objects/tree_evaluator'], function(Phaser,TreeEvaluator) {
         this.lastSuccess = false;
         this.lastTime = null;
         this.secondsSuccess = 0;
+        
+        this.tier = tier;
+        this.max_tier = 0;
     }
     Quest.prototype.constructor = Quest;
 
