@@ -36,6 +36,14 @@ define(['phaser','helper'], function(Phaser,Helper) {
                 rotation_min: 0,
                 rotation_max: 40,
                 angular_drag: 0,
+                start_explode: true,
+                start_lifespan: function() {
+                    return Math.max(100,Helper.randomNormal(500,500));
+                },
+                start_frequency: null,
+                start_foo: function(config) {
+                    return (config.length / 60) + 1;
+                }
             },
             wind_emitter: {
                 particles_max: 500,
@@ -88,7 +96,40 @@ define(['phaser','helper'], function(Phaser,Helper) {
                 },
             },
             grow: {
+                length: {
+                    multiplicator: 12,
+                    pheromoneIdx: 0,
+                    pheromoneStd: 0.1,
+                    yearDivider: 5,
+                    dividerMin: 1,
+                },
+                strength: {
+                    pheromoneIdx: 1, // 
+                    subtract: 1,
+                    dividerMin: 1,
+                    yearDivider: 5,
 
+                },
+                childCondition: {
+                    pheromoneIdx: 2, // used as probability
+                    numChildrenMultiplicator: 0.7, // ~/numChildren used as probability
+                    minYear: function() {
+                        return game.rnd.integerInRange(1, 3);
+                    },
+                    minLengthPerChild: 5,
+                    radius: 50,
+                },
+                splitCondition: {
+                    minLength: 60,
+                    probability: 0.4,
+                },
+                leafGrowProbability: 0.4,
+                newLeaf: {
+                    probabilityMultiplicator: 10,
+                    maxStrength: function() {
+                        return game.rnd.integerInRange(5, 15);
+                    }
+                }
             },
             jointDynamics: {
                 angle_rate_rate: function(config) {
@@ -99,6 +140,26 @@ define(['phaser','helper'], function(Phaser,Helper) {
                 targetAngleGain: 0.99,
                 originalAngleGain: 0.9,
                 originalAngleAdaptionGain: 0.999,
+                angleRateZeroGain: 0.9
+            },
+            updatePheromoneLevel: {
+                grow: 0.012,
+                strength: 1.1,
+                branch: 0.4,
+            },
+            randomSplitPosition: {
+                minLength: 0.25,
+                maxLength: 0.75,
+            },
+            _areParentsStrongEnough: {
+                pheromoneIdx: 3, // 
+                myWeightRandomMean: 3,
+                myWeightRandomStd: 1,
+            },
+            _addRandomLeaf: {
+                randomPointMin: 0,
+                randomPointMax: 0.9,
+                maxLeafDensity: 2
             }
         }
 

@@ -60,35 +60,40 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
     };
 
     Branch.prototype.jointDynamics = function () {
+        var genome = this.tree.genome.branch.jointDynamics;
         // angular movement
         this.config.angle += this.config.angle_rate;
 
         // add random force to create angular movement
-        this.config.angle_rate += this.tree.genome.branch.jointDynamics.angle_rate_rate(this.config);
+        this.config.angle_rate += genome.angle_rate_rate(this.config);
 
         // force angle back to its original_angle
-        this.config.angle = Helper.gainFilter(this.config.angle,this.config.original_angle,this.tree.genome.branch.jointDynamics.originalAngleGain);
+        this.config.angle = Helper.gainFilter(this.config.angle,this.config.original_angle,genome.originalAngleGain);
 
         // let original_angle very slowly adapt
-        this.config.original_angle = Helper.gainFilter(this.config.original_angle,this.config.angle,this.tree.genome.branch.jointDynamics.originalAngleAdaptionGain);
+        this.config.original_angle = Helper.gainFilter(this.config.original_angle,this.config.angle,genome.originalAngleAdaptionGain);
 
         // force angle to targetAngle if is too different from it
-        var targetAngle = this.tree.genome.branch.jointDynamics.targetAngle;
-        var targetAngleDeadZone = this.tree.genome.branch.jointDynamics.targetAngleDeadZone;
-        var targetAngleGain = this.tree.genome.branch.jointDynamics.targetAngleGain;
+        var targetAngle = genome.targetAngle;
+        var targetAngleDeadZone = genome.targetAngleDeadZone;
+        var targetAngleGain = genome.targetAngleGain;
         if (Math.abs(this.config.angle - (targetAngle))>targetAngleDeadZone){
             this.config.angle = Helper.gainFilter(this.config.angle,targetAngle,targetAngleGain);
         }
+
+        // force angle_rate back to zero
+        this.config.angle_rate = Helper.gainFilter(this.config.angle_rate,0,genome.angleRateZeroGain);
+
     };
 
     Branch.prototype.grow = function () {
-        this.config.length += 12 * (Math.abs(Helper.randomNormal(this.pheromone[0], 0.1))) / (1+(this.config.year)/5);
-        this.config.strength += (this.pheromone[1] - 1)  / (1+(this.config.year)/5);
+        var genome = this.tree.genome.branch.grow;
+        this.config.length += genome.length.multiplicator * (Math.abs(Helper.randomNormal(this.pheromone[genome.length.pheromoneIdx], genome.length.pheromoneStd))) / (genome.length.dividerMin+(this.config.year)/genome.length.yearDivider);
+        this.config.strength += (this.pheromone[genome.strength.pheromoneIdx] - genome.strength.subtract)  / (genome.strength.dividerMin+(this.config.year)/genome.strength.yearDivider);
 
         this.jointDynamics();
 
         // // console.log(this.config.angle);
-        this.config.angle_rate = Helper.gainFilter(this.config.angle_rate,0,0.90);
 
         this._update();
         this.children.forEach(function (child) {
@@ -96,21 +101,22 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         });
 
         // add child branches, if branch is strength enough
-        if ( this.pheromone[2] >= this.game.rnd.realInRange(0, 1) &&
-            0.7 / this.children.length >= this.game.rnd.realInRange(0,1) &&
-            this.config.year > this.game.rnd.integerInRange(1, 3)
+        if (this.pheromone[genome.childCondition.pheromoneIdx] >= this.game.rnd.realInRange(0, 1) &&
+            genome.childCondition.numChildrenMultiplicator / this.children.length >= this.game.rnd.realInRange(0,1) &&
+            this.config.year > genome.childCondition.minYear()
             && this._areParentsStrongEnough()
-            && this.config.length / this.children.length > 5
+            && this.config.length / this.children.length > genome.childCondition.minLengthPerChild
             //&& (this.config.length * this.config.strength) / this.pheromone[3] < 0.9
             //&& this.pheromone[3] < (this.config.length * this.config.strength)
         ) {
 
             this.generateChildren({
-                radius: 50
+                radius: genome.childCondition.radius
             });
         }
 
-        if (this.config.length > 60 && this.game.rnd.realInRange(0, 1) > 0.6) {
+        if (this.config.length > genome.splitCondition.minLength && 
+            this.game.rnd.realInRange(0, 1) < genome.splitCondition.probability) {
             this._split();
         }
 
@@ -122,7 +128,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
                 aliveLeafs.push(leaf);
             }
 
-            if (this.game.rnd.realInRange(0,1.0) > 0.6) {
+            if (this.game.rnd.realInRange(0,1.0) > genome.leafGrowProbability) {
                 leaf.numLeaves = Math.min(leaf.numLeaves+1, this.tree.leafs.leafs_per_frame);
             }
         }, this);
@@ -130,8 +136,8 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
 
 
         // Generate new leaves
-        if (this.leafs.length / this.config.length < this.game.rnd.realInRange(0,0.1) &&
-            this.config.strength < this.game.rnd.integerInRange(5, 15)
+        if (genome.newLeaf.probabilityMultiplicator * this.leafs.length / this.config.length < this.game.rnd.realInRange(0,1) &&
+            this.config.strength < genome.newLeaf.maxStrength
         ) {
             this._addRandomLeaf();
         }
@@ -147,8 +153,11 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
      * @returns {number[]} Pheromone levels for this branch (grow, strength, branch, weight)
      */
     Branch.prototype.updatePheromoneLevel = function () {
+        var genome = this.tree.genome.branch.updatePheromoneLevel;
+
         if (this.children.length == 0) {
-            this.pheromone = [1, 1, 1, (this.config.length * this.config.strength)];
+            this.pheromone = Helper.clone(this.tree.genome.branch.pheromone);
+            this.pheromone.push(this.config.length * this.config.strength);
         } else {
             var grow = 0, strength = 0, branch = 0, weight = 0;
             this.children.forEach(function (child) {
@@ -163,9 +172,9 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
             strength /= this.children.length;
             branch /= this.children.length;
 
-            grow *= 0.012;
-            strength *= 1.1;
-            branch *= 0.4;
+            grow *= genome.grow;
+            strength *= genome.strength;
+            branch *= genome.branch;
 
             this.pheromone = [grow, strength, branch, weight];
         }
@@ -201,7 +210,12 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         var p = this.line.random();
         window.tree.leafEmitter.x = p.x;
         window.tree.leafEmitter.y = p.y;
-        window.tree.leafEmitter.start(true, Math.max(100,Helper.randomNormal(500,500)), null, (this.config.length / 60) + 1);
+        window.tree.leafEmitter.start(
+            this.tree.genome.leaf.emitter.start_explode, 
+            this.tree.genome.leaf.emitter.start_lifespan(), 
+            this.tree.genome.leaf.emitter.start_frequency, 
+            this.tree.genome.leaf.emitter.start_foo(this.config) 
+            );
 
         this.children.forEach(function(child) {
             child.dropLeavesAnimation();
@@ -236,8 +250,9 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
      */
 
     Branch.prototype._split = function(discardChildren, position) {
+        var genome = this.tree.genome.branch.randomSplitPosition;
         var newConfig = Helper.clone(this.config);
-        newConfig.length = position || this.game.rnd.realInRange(this.config.length * 0.25, this.config.length * 0.75);
+        newConfig.length = position || this.game.rnd.realInRange(this.config.length * genome.minLength, this.config.length * genome.maxLength);
 
         var newBranch = new Branch(this.game, this.parent, newConfig);
 
@@ -269,14 +284,15 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
      * @private
      */
     Branch.prototype._areParentsStrongEnough = function() {
+        var genome = this.tree.genome.branch._areParentsStrongEnough;
         var myWeight = this.config.strength * this.config.length;
-        var childWeight = this.pheromone[3];
+        var childWeight = this.pheromone[genome.pheromoneIdx];
 
         if (!this.parent.config) { // root branch
             return true;
         }
 
-        if (myWeight * Helper.randomNormal(3, 1.0) <= childWeight) {
+        if (myWeight * Helper.randomNormal(genome.myWeightRandomMean, genome.myWeightRandomStd) <= childWeight) {
             return false;
         } else {
             return this.parent._areParentsStrongEnough();
@@ -284,14 +300,15 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
     };
 
     Branch.prototype._addRandomLeaf = function() {
-        var p = Helper.randomPointOnLine(this.line, 0.0, 0.9);
+        var genome = this.tree.genome.branch._addRandomLeaf;
+        var p = Helper.randomPointOnLine(this.line, genome.randomPointMin, genome.randomPointMax);
         p.x -= this.line.end.x;
         p.y -= this.line.end.y;
 
         p.x += Helper.randomNormal(0, 1) * this.tree.leafs.leaf_displacement_x;
         p.y += Helper.randomNormal(0, 1) * this.tree.leafs.leaf_displacement_y;
 
-        if (this.tree.leafDensity.get(this.line.end.x + p.x, this.line.end.y + p.y) >= 2) {
+        if (this.tree.leafDensity.get(this.line.end.x + p.x, this.line.end.y + p.y) >= genome.maxLeafDensity) {
             return;
         }
 
