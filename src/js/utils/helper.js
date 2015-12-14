@@ -73,6 +73,9 @@ define(["phaser"], function(Phaser) {
                 if (obj.hasOwnProperty(attr)) copy[attr] = obj[attr];
             }
             return copy;
+        },
+        "gainFilter": function(value, otherValue, gain) {
+            return value * gain + (1-gain) * otherValue;
         }
     };
 });

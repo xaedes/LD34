@@ -27,12 +27,15 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
     // Public methods
     ////
     Branch.prototype.generateChildren = function (branch_config) {
+        var angle = this.config.angle + this.game.rnd.integerInRange(-branch_config.radius, branch_config.radius);
         var config = {
             level: this.config.level + 1,
-            angle: this.config.angle + this.game.rnd.integerInRange(-branch_config.radius, branch_config.radius),
+            angle: angle,
             length: this.game.rnd.realInRange(1, 3),
             strength: this.game.rnd.realInRange(Math.min(4, this.config.strength), Math.min(this.config.strength, 10)),
-            year: 0
+            year: 0,
+            angle_rate: 0,
+            original_angle: angle
         };
 
         // check if enough space is free
@@ -59,6 +62,19 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
     Branch.prototype.grow = function () {
         this.config.length += 12 * (Math.abs(Helper.randomNormal(this.pheromone[0], 0.1))) / (1+(this.config.year)/5);
         this.config.strength += (this.pheromone[1] - 1)  / (1+(this.config.year)/5);
+
+        // control angle 
+        this.config.angle += this.config.angle_rate;
+        this.config.angle_rate += Helper.randomNormal(0,1/(1+1*this.config.strength*this.config.year));
+
+        var targetAngle = -90;
+        this.config.angle = Helper.gainFilter(this.config.angle,this.config.original_angle,0.9);
+
+        if (Math.abs(this.config.angle - (targetAngle))>180){
+            this.config.angle = Helper.gainFilter(this.config.angle,targetAngle,0.99);
+        }
+        // // console.log(this.config.angle);
+        this.config.angle_rate = Helper.gainFilter(this.config.angle_rate,0,0.99);
 
         this._update();
         this.children.forEach(function (child) {

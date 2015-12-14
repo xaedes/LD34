@@ -30,9 +30,11 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
             {
                 level: 0,
                 angle: -90,
+                original_angle: -90,
                 length: 15,
                 strength: 20,
-                year: 10
+                year: 10,
+                angle_rate: 0
             },
             this
         );
@@ -52,7 +54,7 @@ define(['phaser', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf
                     self.grow();
                     self.draw();
 
-                    if (++self.growModus === 15) {
+                    if (++self.growModus === 1500) {
                         self.growModus = 0;
                         window.clearInterval(intervalID);
                     }
