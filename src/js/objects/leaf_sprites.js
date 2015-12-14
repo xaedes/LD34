@@ -32,7 +32,7 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         this.leaf_alpha = 0.3;
 
         // how many frames
-        this.num_frames = 100;
+        this.num_frames = 50;
 
         // this holds our frames
         var bm = this.game.add.bitmapData(this.frame_width * this.leafs_per_frame, this.frame_height * this.num_frames);
