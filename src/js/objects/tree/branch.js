@@ -59,13 +59,13 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         return undefined;
     };
 
-    Branch.prototype.jointDynamics = function () {
+    Branch.prototype.jointDynamics = function (dimish) {
         var genome = this.tree.genome.branch.jointDynamics;
         // angular movement
-        this.config.angle += this.config.angle_rate;
+        this.config.angle += dimish * this.config.angle_rate;
 
         // add random force to create angular movement
-        this.config.angle_rate += genome.angle_rate_rate(this.config);
+        this.config.angle_rate += dimish * genome.angle_rate_rate(this.config);
 
         // force angle back to its original_angle
         this.config.angle = Helper.gainFilter(this.config.angle,this.config.original_angle,genome.originalAngleGain);
@@ -86,23 +86,23 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
 
     };
 
-    Branch.prototype.grow = function () {
+    Branch.prototype.grow = function (dimish) {
         var genome = this.tree.genome.branch.grow;
-        this.config.length += genome.length.multiplicator * (Math.abs(Helper.randomNormal(this.pheromone[genome.length.pheromoneIdx], genome.length.pheromoneStd))) / (genome.length.dividerMin+(this.config.year)/genome.length.yearDivider);
-        this.config.strength += (this.pheromone[genome.strength.pheromoneIdx] - genome.strength.subtract)  / (genome.strength.dividerMin+(this.config.year)/genome.strength.yearDivider);
+        this.config.length += dimish * genome.length.multiplicator * (Math.abs(Helper.randomNormal(this.pheromone[genome.length.pheromoneIdx], genome.length.pheromoneStd))) / (genome.length.dividerMin+(this.config.year)/genome.length.yearDivider);
+        this.config.strength += dimish * ((this.pheromone[genome.strength.pheromoneIdx] - genome.strength.subtract)  / (genome.strength.dividerMin+(this.config.year)/genome.strength.yearDivider));
 
-        this.jointDynamics();
+        this.jointDynamics(dimish);
 
         // // console.log(this.config.angle);
 
         this._update();
         this.children.forEach(function (child) {
-            child.grow();
+            child.grow(dimish);
         });
 
         // add child branches, if branch is strength enough
-        if (this.pheromone[genome.childCondition.pheromoneIdx] >= this.game.rnd.realInRange(0, 1) &&
-            genome.childCondition.numChildrenMultiplicator / this.children.length >= this.game.rnd.realInRange(0,1) &&
+        if (dimish * this.pheromone[genome.childCondition.pheromoneIdx] >= this.game.rnd.realInRange(0, 1) &&
+            dimish * genome.childCondition.numChildrenMultiplicator / this.children.length >= this.game.rnd.realInRange(0,1) &&
             this.config.year > genome.childCondition.minYear()
             && this._areParentsStrongEnough()
             && this.config.length / this.children.length > genome.childCondition.minLengthPerChild
@@ -116,7 +116,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         }
 
         if (this.config.length > genome.splitCondition.minLength && 
-            this.game.rnd.realInRange(0, 1) < genome.splitCondition.probability) {
+            dimish * genome.splitCondition.probability >= this.game.rnd.realInRange(0, 1)) {
             this._split();
         }
 
@@ -128,7 +128,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
                 aliveLeafs.push(leaf);
             }
 
-            if (this.game.rnd.realInRange(0,1.0) > genome.leafGrowProbability) {
+            if (dimish * genome.leafGrowProbability >= this.game.rnd.realInRange(0,1.0)) {
                 leaf.numLeaves = Math.min(leaf.numLeaves+1, this.tree.leafs.leafs_per_frame);
             }
         }, this);
@@ -136,13 +136,13 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
 
 
         // Generate new leaves
-        if (genome.newLeaf.probabilityMultiplicator * this.leafs.length / this.config.length < this.game.rnd.realInRange(0,1) &&
+        if (dimish * (1-genome.newLeaf.probabilityMultiplicator * this.leafs.length / this.config.length) >= this.game.rnd.realInRange(0,1) &&
             this.config.strength < genome.newLeaf.maxStrength
         ) {
             this._addRandomLeaf();
         }
 
-        this.config.year += 1;
+        this.config.year += dimish;
 
         return this;
     };
@@ -214,7 +214,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
             this.tree.genome.leaf.emitter.start_explode, 
             this.tree.genome.leaf.emitter.start_lifespan(), 
             this.tree.genome.leaf.emitter.start_frequency, 
-            this.tree.genome.leaf.emitter.start_foo(this.config) 
+            this.tree.genome.leaf.emitter.start_quantity(this.config) 
             );
 
         this.children.forEach(function(child) {

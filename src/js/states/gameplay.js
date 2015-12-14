@@ -25,6 +25,29 @@ define(['phaser', 'objects/tree', 'objects/tree_evaluator',
 
             this.game.stage.backgroundColor = "#89abd0";
 
+            this.gKey = this.game.input.keyboard.addKey(Phaser.Keyboard.G);
+            
+            var tree = this.tree;
+            this.gKey.onDown.add(function() {
+                if (!tree.growModus) {
+                    tree.growModus = 1;
+                    var intervalID = setInterval(function() {
+                        tree.grow(1);
+                        tree.draw();
+
+                        if (++tree.growModus === tree.genome.grow_count) {
+                            tree.growModus = 0;
+                            window.clearInterval(intervalID);
+                        }
+                    }, tree.genome.grow_rate);
+                }
+
+            });
+
+            this.slowGrowthIntervalID = setInterval(function() {
+                tree.grow(tree.genome.slow_grow);
+                tree.draw();
+            }, tree.genome.slow_grow_rate);
         },
 
         update: function() {

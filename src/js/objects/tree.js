@@ -51,24 +51,6 @@ define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_
 
         this.growModus = 0;
 
-        this.gKey = this.game.input.keyboard.addKey(Phaser.Keyboard.G);
-        var self = this;
-        // ToDo: move into gameplay
-        this.gKey.onDown.add(function() {
-            if (!this.growModus) {
-                this.growModus = 1;
-                var intervalID = setInterval(function() {
-                    self.grow();
-                    self.draw();
-
-                    if (++self.growModus === self.genome.grow_count) {
-                        self.growModus = 0;
-                        window.clearInterval(intervalID);
-                    }
-                }, this.genome.grow_rate);
-            }
-
-        }, this);
 
         //// Leaf emitter
         var leafFrames = [];
@@ -112,8 +94,8 @@ define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_
     ////
     // Public methods
     ////
-    Tree.prototype.grow = function () {
-        this.root.grow();
+    Tree.prototype.grow = function (dimish) {
+        this.root.grow(dimish);
         this.root.updatePheromoneLevel();
 
         this.onGrow.dispatch();

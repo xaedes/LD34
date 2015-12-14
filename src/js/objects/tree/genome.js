@@ -9,7 +9,9 @@ define(['phaser','helper'], function(Phaser,Helper) {
         this.start_branch_config = {
         };
         this.grow_rate = 1000 / 25;
-        this.grow_count = 1500;
+        this.grow_count = 15;
+        this.slow_grow = 0.1;
+        this.slow_grow_rate = 1000 / 2;
         this.leaf = {
             width: 16,
             height: 16,
@@ -22,7 +24,7 @@ define(['phaser','helper'], function(Phaser,Helper) {
             colormap: "colormap_green",
             name: "green_leafs",
             emitter: {
-                particles_max: 5000,
+                particles_max: 1000,
                 scale_min: 0.9,
                 scale_max: 1.6,
                 y_speed_min: -5,
@@ -41,7 +43,7 @@ define(['phaser','helper'], function(Phaser,Helper) {
                     return Math.max(100,Helper.randomNormal(500,500));
                 },
                 start_frequency: null,
-                start_foo: function(config) {
+                start_quantity: function(config) {
                     return (config.length / 60) + 1;
                 }
             },
@@ -161,8 +163,7 @@ define(['phaser','helper'], function(Phaser,Helper) {
                 randomPointMax: 0.9,
                 maxLeafDensity: 2
             }
-        }
-
+        };
     }
     Genome.prototype.constructor = Genome;
     return Genome;
