@@ -18,7 +18,8 @@ define(['phaser','helper'], function(Phaser,Helper) {
             padding: 32,
             displacement_x: 0.6, // * leaf_width
             displacement_y: 0.6, // * leaf_height
-            leafs_per_frame: 20, 
+            leafs_per_frame_min: 1, 
+            leafs_per_frame_max: 20, 
             alpha: 0.6, 
             num_frames: 50, 
             colormap: "colormap_green",
@@ -68,6 +69,19 @@ define(['phaser','helper'], function(Phaser,Helper) {
                 tree_relative_height: 0.75,
                 tree_relative_emit_y: 0.5,
             }
+        };
+        this.ground_brush = {
+            width: 32,
+            height: 32,
+            padding: 48,
+            displacement_x: 0.6, // * leaf_width
+            displacement_y: 0.6, // * leaf_height
+            leafs_per_frame_min: 5, 
+            leafs_per_frame_max: 10, 
+            alpha: 0.6, 
+            num_frames: 32, 
+            colormap: "colormap",
+            name: "ground_brush",
         };
         this.trunk_color = 0x37220f;
         this.trunk_joint_size = 1;

@@ -1,8 +1,8 @@
 'use strict';
 
 define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf_sprites', 'objects/grid2d',
-        'objects/render_texture_image'],
-    function(Phaser, Genome, Branch, GraphicsWrapper, LeafSprites, Grid2d, RenderTextureImage) {
+        'objects/render_texture_image', 'helper'],
+    function(Phaser, Genome, Branch, GraphicsWrapper, LeafSprites, Grid2d, RenderTextureImage, Helper) {
 
     function Tree(game, x, y) {
         // super constructor
@@ -26,10 +26,16 @@ define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_
         this.onGrow = new Phaser.Signal();
         this.onCut = new Phaser.Signal();
 
-        // Intialize leaf rendering
-        this.leafs = new LeafSprites(this.game, this);
+        // Initialize leaf rendering
+        this.leafs = new LeafSprites(this.game, this.genome.leaf);
         this.leafsImage = new RenderTextureImage(this.game);
+        
+        // Initialize ground rendering
+        this.groundBrush = new LeafSprites(this.game, this.genome.ground_brush);
+        this.groundImage = new RenderTextureImage(this.game);
+
         this.game.world.add(this.leafsImage);
+        this.game.world.add(this.groundImage);
 
         this.root = new Branch(
             game,
@@ -86,6 +92,7 @@ define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_
 
         // Initial draw call
         this.draw();
+        this.drawGround();
     }
 
 
@@ -167,6 +174,23 @@ define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_
         return this;
     };
 
+
+    Tree.prototype.drawGround = function(n) {
+        n = n || 1000
+        this.groundImage.tex.clear();
+        for(var i = 0; i < n; i++){
+            var x = Helper.randomNormal(this.game.world.width/2,this.game.world.width/4);
+            var y = this.game.world.height - Math.abs(Helper.randomNormal(0,this.game.world.height/32));
+            var frame = this.game.rnd.integerInRange(0,this.groundBrush.num_frames);
+            var num = this.game.rnd.integerInRange(this.groundBrush.leafs_per_frame_min,this.groundBrush.leafs_per_frame_max);
+            this.groundBrush.setFrame(frame, num);
+            this.groundImage.tex.renderRawXY(
+                this.groundBrush.sprite,
+                x,
+                y
+            );
+        }
+    };
     Tree.prototype.cut = function(cutLine) {
         this.root.cut(cutLine);
         this.draw();

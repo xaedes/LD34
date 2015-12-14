@@ -1,10 +1,9 @@
 'use strict';
 
 define(['phaser', 'helper'], function (Phaser, Helper) {
-    function LeafSprites(game, tree) {
+    function LeafSprites(game, genome) {
         this.game = game;
-        this.tree = tree;
-        this.genome = this.tree.genome.leaf;
+        this.genome = genome;
         // used to generate leaf points
         this.leaf_width = this.genome.width;
         this.leaf_height = this.genome.height;
@@ -22,7 +21,8 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         this.leaf_displacement_y = this.leaf_height * this.genome.displacement_y;
 
         // how many leafs per frame?
-        this.leafs_per_frame = this.genome.leafs_per_frame;
+        this.leafs_per_frame_min = this.genome.leafs_per_frame_min;
+        this.leafs_per_frame_max = this.genome.leafs_per_frame_max;
 
         this.leaf_alpha = this.genome.alpha;
 
@@ -30,7 +30,8 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         this.num_frames = this.genome.num_frames;
 
         // this holds our frames
-        var bm = this.game.add.bitmapData(this.frame_width * this.leafs_per_frame, this.frame_height * this.num_frames);
+        // var bm = this.game.add.bitmapData(this.frame_width * 20, this.frame_height * this.num_frames);
+        var bm = this.game.add.bitmapData(this.frame_width * (this.leafs_per_frame_max-this.leafs_per_frame_min+1), this.frame_height * this.num_frames);
 
         // this is used to draw one frame
         var graphics = this.game.add.graphics(0, 0);
@@ -53,7 +54,23 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
             graphics.drawRect(0, 0, this.frame_width, this.frame_height);
 
             // generate a bunch of leaves
-            for(var k = 0; k < this.leafs_per_frame; ++k) {
+            if(this.leafs_per_frame_min==0){
+                // flush operations
+                graphics.update();
+
+                // generate image from last drawn frame
+                var tex = graphics.generateTexture();
+                var img = new Phaser.Image(this.game, 0, 0, tex);
+
+                // copy frame into bitmapdata buffer
+                var x = 0 * this.frame_width;
+                var y = frame_idx * this.frame_height;
+                bm.copy(img, 0, 0, this.frame_width, this.frame_height, x, y);
+
+                // save data for this frame in atlas
+                atlasData.frames.push({frame: {x: x, y: y, w: this.frame_width, h: this.frame_height}});
+            }
+            for(var k = 1; k <= this.leafs_per_frame_max; ++k) {
                 var rx = Helper.randomNormal(0, 1) * this.leaf_displacement_x;
                 var ry = Helper.randomNormal(0, 1) * this.leaf_displacement_y;
 
@@ -68,18 +85,21 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
                 // flush operations
                 graphics.update();
 
-                // generate image from last drawn frame
-                var tex = graphics.generateTexture();
-                var img = new Phaser.Image(this.game, 0, 0, tex);
+                if(k >= this.leafs_per_frame_min){
+                    // generate image from last drawn frame
+                    var tex = graphics.generateTexture();
+                    var img = new Phaser.Image(this.game, 0, 0, tex);
 
-                // copy frame into bitmapdata buffer
-                var x = k * this.frame_width;
-                var y = frame_idx * this.frame_height;
-                bm.copy(img, 0, 0, this.frame_width, this.frame_height, x, y);
+                    // copy frame into bitmapdata buffer
+                    var x = (k-this.leafs_per_frame_min) * this.frame_width;
+                    var y = frame_idx * this.frame_height;
+                    bm.copy(img, 0, 0, this.frame_width, this.frame_height, x, y);
 
-                // save data for this frame in atlas
-                atlasData.frames.push({frame: {x: x, y: y, w: this.frame_width, h: this.frame_height}});
+                    // save data for this frame in atlas
+                    atlasData.frames.push({frame: {x: x, y: y, w: this.frame_width, h: this.frame_height}});
+                }
             }
+
         }
 
         // flush operations (i don't think this is necessary)
@@ -90,8 +110,8 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         this.game.cache.addTextureAtlas(this.genome.name, '', bm.canvas, atlasData, Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
         
         // create Sprite with generated spritesheet
-        this.leaf = new Phaser.Sprite(game, 0, 0, this.genome.name);
-        this.leaf.anchor.set(0.5);
+        this.sprite = new Phaser.Sprite(game, 0, 0, this.genome.name);
+        this.sprite.anchor.set(0.5);
 
         // should be kept here for reference
         // inspired from 
@@ -100,6 +120,9 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
 
     LeafSprites.prototype.constructor = LeafSprites;
 
+    LeafSprites.prototype.setFrame = function (frame_idx, num) {
+        this.sprite.frame = Math.min(frame_idx * (this.leafs_per_frame_max-this.leafs_per_frame_min+1),this.leafs_per_frame_min) + num - this.leafs_per_frame_min;
+    };
     LeafSprites.prototype.pickColor = function () {
         // pick a color from a random pixel in colormap
         var x = this.game.rnd.integerInRange(0, this.colormap.width);

@@ -15,9 +15,9 @@ define([], function() {
     Leaf.prototype.constructor = Leaf;
 
     Leaf.prototype.draw = function (leafs, leafsImage) {
-        leafs.leaf.frame = (this.idx % leafs.num_frames) * leafs.leafs_per_frame + this.numLeaves - 1;
+        leafs.setFrame(this.idx % leafs.num_frames, this.numLeaves);
         leafsImage.tex.renderRawXY(
-            leafs.leaf,
+            leafs.sprite,
             this.branch.line.end.x + this.x,
             this.branch.line.end.y + this.y);
     };

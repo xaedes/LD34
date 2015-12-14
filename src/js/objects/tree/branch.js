@@ -133,7 +133,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
             }
 
             if (dimish * genome.leafGrowProbability >= this.game.rnd.realInRange(0,1.0)) {
-                leaf.numLeaves = Math.min(leaf.numLeaves+1, this.tree.leafs.leafs_per_frame);
+                leaf.numLeaves = Math.min(leaf.numLeaves+1, this.tree.leafs.leafs_per_frame_max);
             }
         }, this);
         this.leafs = aliveLeafs;
