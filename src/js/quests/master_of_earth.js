@@ -17,7 +17,6 @@ define(['phaser', 'helper', 'objects/tree_evaluator', 'quests/quest'],
         this.description = "Grow a tree, with only the lower part of the screen filled with leafs.";
         this.description += "\nYou can have at most " + Math.floor(this.condition.sum_upper) + " leaves in the upper part";
         this.description += "\nYou need at least " + Math.ceil(this.condition.sum_lower) + " leaves in the lower part";
-         // + this.condition.sum_lower;
         this.on_the_way_msg = "This looks good!";
         this.success_msg = "You did well. I shall now call you Master Of Earth.";
     }
