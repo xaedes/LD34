@@ -99,7 +99,7 @@ define(['phaser','helper'], function(Phaser,Helper) {
             },
             grow: {
                 length: {
-                    multiplicator: 12,
+                    multiplicator: 8,
                     pheromoneIdx: 0,
                     pheromoneStd: 0.1,
                     yearDivider: 5,
@@ -140,6 +140,10 @@ define(['phaser','helper'], function(Phaser,Helper) {
                 targetAngle: -90,
                 targetAngleDeadZone: 180,
                 targetAngleGain: 0.99,
+                longtermTargetAngleDifference: function() {
+                    return Helper.randomNormal(0,45);
+                },
+                longtermTargetAngleDifferenceGain: 0.9,
                 originalAngleGain: 0.9,
                 originalAngleAdaptionGain: 0.999,
                 angleRateZeroGain: 0.9
@@ -161,7 +165,7 @@ define(['phaser','helper'], function(Phaser,Helper) {
             _addRandomLeaf: {
                 randomPointMin: 0,
                 randomPointMax: 0.9,
-                maxLeafDensity: 2
+                maxLeafDensity: 3
             }
         };
     }

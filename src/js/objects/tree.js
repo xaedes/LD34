@@ -41,7 +41,8 @@ define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_
                 length: this.genome.branch.start_config.length,
                 strength: this.genome.branch.start_config.strength,
                 year: this.genome.branch.start_config.year,
-                angle_rate: 0
+                angle_rate: 0,
+                longterm_angle: this.genome.branch.start_config.angle
             },
             this
         );

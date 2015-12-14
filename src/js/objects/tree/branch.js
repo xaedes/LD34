@@ -35,9 +35,9 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
             strength: this.tree.genome.branch.generateChildren.strength(this.config),
             year: 0,
             angle_rate: 0,
-            original_angle: angle
+            original_angle: angle,
+            longterm_angle: this.config.angle + this.tree.genome.branch.jointDynamics.longtermTargetAngleDifference()
         };
-
         // check if enough space is free
         var line = new Phaser.Line();
         line.fromAngle(this.x, this.y, config.angle);
@@ -68,21 +68,25 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         this.config.angle_rate += dimish * genome.angle_rate_rate(this.config);
 
         // force angle back to its original_angle
-        this.config.angle = Helper.gainFilter(this.config.angle,this.config.original_angle,genome.originalAngleGain);
+        this.config.angle = Helper.gainFilter(this.config.angle,this.config.original_angle,Helper.lerp(1,genome.originalAngleGain,dimish));
+
+        // force angle to its long term angle value
+        this.config.angle = Helper.gainFilter(this.config.angle,this.config.longterm_angle,Helper.lerp(1,genome.longtermTargetAngleDifferenceGain,dimish));
 
         // let original_angle very slowly adapt
-        this.config.original_angle = Helper.gainFilter(this.config.original_angle,this.config.angle,genome.originalAngleAdaptionGain);
+        this.config.original_angle = Helper.gainFilter(this.config.original_angle,this.config.angle,Helper.lerp(1,genome.originalAngleAdaptionGain,dimish));
 
         // force angle to targetAngle if is too different from it
         var targetAngle = genome.targetAngle;
         var targetAngleDeadZone = genome.targetAngleDeadZone;
         var targetAngleGain = genome.targetAngleGain;
         if (Math.abs(this.config.angle - (targetAngle))>targetAngleDeadZone){
-            this.config.angle = Helper.gainFilter(this.config.angle,targetAngle,targetAngleGain);
+            this.config.angle = Helper.gainFilter(this.config.angle,targetAngle,
+                Helper.lerp(1,targetAngleGain,dimish));
         }
 
         // force angle_rate back to zero
-        this.config.angle_rate = Helper.gainFilter(this.config.angle_rate,0,genome.angleRateZeroGain);
+        this.config.angle_rate = Helper.gainFilter(this.config.angle_rate,0,Helper.lerp(1,genome.angleRateZeroGain,dimish));
 
     };
 
@@ -123,7 +127,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         // Update leaves
         var aliveLeafs = [];
         this.leafs.forEach(function(leaf) {
-            leaf.update();
+            leaf.update(dimish);
             if (!leaf.killed) {
                 aliveLeafs.push(leaf);
             }

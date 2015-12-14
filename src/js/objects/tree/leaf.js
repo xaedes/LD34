@@ -22,8 +22,8 @@ define([], function() {
             this.branch.line.end.y + this.y);
     };
 
-    Leaf.prototype.update = function () {
-        this.age++;
+    Leaf.prototype.update = function (dimish) {
+        this.age+=dimish;
 
         if (this.age >= this.branch.game.rnd.integerInRange(100, 300)) {
             this.killed = true;
