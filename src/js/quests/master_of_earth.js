@@ -6,7 +6,7 @@ define(['phaser', 'helper', 'objects/tree_evaluator', 'quests/quest'],
     function MasterOfEarth(game, treeEvaluator, tier) {
         Quest.call(this, game, treeEvaluator, tier);
         this.title = tier+".Master Of Earth";
-        this.secondsToWin = 3;
+        this.secondsToWin = 10;
         this.max_tier = 100;
         this.difficulty = this.tier/this.max_tier;
         this.size = 1-0.9*this.difficulty;
