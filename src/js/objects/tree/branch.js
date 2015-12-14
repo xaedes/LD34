@@ -10,7 +10,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         this.leafs = [];
 
         this.config = config;
-        this.pheromone = [1, 1, 1];
+        this.pheromone = Helper.clone(this.tree.genome.branch.pheromone);
 
         this.line = new Phaser.Line();
 
@@ -31,8 +31,8 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         var config = {
             level: this.config.level + 1,
             angle: angle,
-            length: this.game.rnd.realInRange(1, 3),
-            strength: this.game.rnd.realInRange(Math.min(4, this.config.strength), Math.min(this.config.strength, 10)),
+            length: this.tree.genome.branch.generateChildren.length(),
+            strength: this.tree.genome.branch.generateChildren.strength(this.config),
             year: 0,
             angle_rate: 0,
             original_angle: angle
@@ -41,12 +41,12 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         // check if enough space is free
         var line = new Phaser.Line();
         line.fromAngle(this.x, this.y, config.angle);
-        if (this.tree.branchDensity.getLine(line) > 10.5) {
+        if (this.tree.branchDensity.getLine(line) > this.tree.genome.branch.generateChildren.maxBranchDensity) {
             return undefined;
         }
 
-        if (config.angle > (-220 - this.game.rnd.integerInRange(-10, 90)) &&
-            config.angle < (40 + this.game.rnd.integerInRange(-10, 90))) {
+        if (config.angle > this.tree.genome.branch.generateChildren.minAngle() &&
+            config.angle < this.tree.genome.branch.generateChildren.maxAngle()) {
 
             var branch = new Branch(this.game, this, config);
             this.children.push(branch);

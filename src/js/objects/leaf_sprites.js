@@ -4,30 +4,30 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
     function LeafSprites(game, tree) {
         this.game = game;
         this.tree = tree;
-
+        this.genome = this.tree.genome.leaf;
         // used to generate leaf points
-        this.leaf_width = this.tree.genome.leaf.width;
-        this.leaf_height = this.tree.genome.leaf.height;
+        this.leaf_width = this.genome.width;
+        this.leaf_height = this.genome.height;
 
         // as we want to draw more than one leaf per frame, we need a little bit more space
         // specify here how much
-        this.padding = this.tree.genome.leaf.padding;
+        this.padding = this.genome.padding;
 
         // size of actual drawing area 
         this.frame_width = this.leaf_width + this.padding * 2;
         this.frame_height = this.leaf_height + this.padding * 2;
 
         // factors to multiply normal(0,1) random variable with to get properly scaled random leaf displacement
-        this.leaf_displacement_x = this.leaf_width * this.tree.genome.leaf.displacement_x;
-        this.leaf_displacement_y = this.leaf_height * this.tree.genome.leaf.displacement_y;
+        this.leaf_displacement_x = this.leaf_width * this.genome.displacement_x;
+        this.leaf_displacement_y = this.leaf_height * this.genome.displacement_y;
 
         // how many leafs per frame?
-        this.leafs_per_frame = this.tree.genome.leaf.leafs_per_frame;
+        this.leafs_per_frame = this.genome.leafs_per_frame;
 
-        this.leaf_alpha = this.tree.genome.leaf.alpha;
+        this.leaf_alpha = this.genome.alpha;
 
         // how many frames
-        this.num_frames = this.tree.genome.leaf.num_frames;
+        this.num_frames = this.genome.num_frames;
 
         // this holds our frames
         var bm = this.game.add.bitmapData(this.frame_width * this.leafs_per_frame, this.frame_height * this.num_frames);
@@ -36,7 +36,7 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         var graphics = this.game.add.graphics(0, 0);
 
         // load colormap for color picking
-        this.colormap = Helper.BitmapDataFromImage(this.game, "colormap_green");
+        this.colormap = Helper.BitmapDataFromImage(this.game, this.genome.colormap);
 
         // prepare frame data
         var atlasData = {frames: []};
@@ -87,10 +87,10 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         graphics.destroy();
 
         // publish generated spritesheet (image data from bm.canvas, frame information from atlasData)
-        this.game.cache.addTextureAtlas("leafs", '', bm.canvas, atlasData, Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
+        this.game.cache.addTextureAtlas(this.genome.name, '', bm.canvas, atlasData, Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
         
         // create Sprite with generated spritesheet
-        this.leaf = new Phaser.Sprite(game, 0, 0, "leafs");
+        this.leaf = new Phaser.Sprite(game, 0, 0, this.genome.name);
         this.leaf.anchor.set(0.5);
 
         // should be kept here for reference

@@ -7,7 +7,7 @@ define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_
     function Tree(game, x, y) {
         // super constructor
         Phaser.Group.call(this, game, game.world, 'tree', true, true, Phaser.Physics.ARCADE);
-        this.genome = new Genome();
+        this.genome = new Genome(game);
         this._x = game.width / 2;
         this._y = game.height;
         window.tree_graphics = new GraphicsWrapper(game, 0, 0);
@@ -16,11 +16,11 @@ define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_
 
         // Heatmap for leaves
         this.leafDensity = new Grid2d(this.game, 
-            Math.floor(game.width / this.genome.leafDensityResolution),
-            Math.floor(game.height / this.genome.leafDensityResolution));
+            Math.floor(game.width / this.genome.leaf_density_resolution),
+            Math.floor(game.height / this.genome.leaf_density_resolution));
         this.branchDensity = new Grid2d(this.game, 
-            Math.floor(game.width / this.genome.branchDensityResolution),
-            Math.floor(game.height / this.genome.branchDensityResolution));
+            Math.floor(game.width / this.genome.branch_density_resolution),
+            Math.floor(game.height / this.genome.branch_density_resolution));
 
         // Signals
         this.onGrow = new Phaser.Signal();
@@ -36,17 +36,17 @@ define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_
             this,
             {
                 level: 0,
-                angle: this.genome.startBranchConfig.angle,
-                original_angle: this.genome.startBranchConfig.angle,
-                length: this.genome.startBranchConfig.length,
-                strength: this.genome.startBranchConfig.strength,
-                year: this.genome.startBranchConfig.year,
+                angle: this.genome.branch.start_config.angle,
+                original_angle: this.genome.branch.start_config.angle,
+                length: this.genome.branch.start_config.length,
+                strength: this.genome.branch.start_config.strength,
+                year: this.genome.branch.start_config.year,
                 angle_rate: 0
             },
             this
         );
         this.root.generateChildren({
-            radius: this.genome.startBranchConfig.radius
+            radius: this.genome.branch.start_config.radius
         });
 
         this.growModus = 0;
@@ -61,11 +61,11 @@ define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_
                     self.grow();
                     self.draw();
 
-                    if (++self.growModus === self.genome.growCount) {
+                    if (++self.growModus === self.genome.grow_count) {
                         self.growModus = 0;
                         window.clearInterval(intervalID);
                     }
-                }, this.genome.growRate);
+                }, this.genome.grow_rate);
             }
 
         }, this);
@@ -76,33 +76,30 @@ define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_
             leafFrames.push(i);
         }
 
-        this.leafEmitter = this.game.add.emitter(0, 0, 5000);
-        this.leafEmitter.makeParticles('leafs', leafFrames);
-        this.leafEmitter.maxParticleScale = 1.6;
-        this.leafEmitter.minParticleScale = 0.9;
-        this.leafEmitter.setYSpeed(-5, 20);
-        this.leafEmitter.setXSpeed(-20, 20);
-        this.leafEmitter.setAlpha(1, 0, 5000);
-        this.leafEmitter.gravity = 30;
-        this.leafEmitter.minRotation = 0;
-        this.leafEmitter.maxRotation = 40;
-
-        this.leafWindEmitter = this.game.add.emitter(0, 0, 500);
-        this.leafWindEmitter.makeParticles('leafs', leafFrames);
-        this.leafWindEmitter.maxParticleScale = 1.6;
-        this.leafWindEmitter.minParticleScale = 0.9;
-        this.leafWindEmitter.setYSpeed(-15, 20);
-        this.leafWindEmitter.setXSpeed(0, 80);
-        this.leafWindEmitter.gravity = 5;
-        this.leafWindEmitter.minRotation = 0;
-        this.leafWindEmitter.maxRotation = 40;
-        this.leafWindEmitter.angularDrag = 10;
-        this.leafWindEmitter.setAlpha(1, 0.2, 10000);
+        function add_emitter(genome) {
+            var emitter = this.game.add.emitter(0, 0, genome.particles_max);
+            emitter.makeParticles(this.genome.leaf.name, leafFrames);
+            emitter.maxParticleScale = genome.scale_max;
+            emitter.minParticleScale = genome.scale_min;
+            emitter.setYSpeed(genome.y_speed_min, genome.y_speed_max);
+            emitter.setXSpeed(genome.x_speed_min, genome.x_speed_max);
+            emitter.setAlpha(genome.alpha_min, genome.alpha_max, genome.alpha_rate);
+            emitter.gravity = genome.gravity;
+            emitter.minRotation = genome.rotation_min;
+            emitter.maxRotation = genome.rotation_max;
+            emitter.angularDrag = genome.angular_drag;
+            return emitter;
+        }
+        this.leafEmitter = add_emitter.call(this, this.genome.leaf.emitter);
+        this.leafWindEmitter = add_emitter.call(this, this.genome.leaf.wind_emitter);
         this.leafWindEmitter.height = game.world.height/2;
         this.leafWindEmitter.emitX = game.world.width/2;
         this.leafWindEmitter.emitY = game.world.height/2;
 
-        this.leafWindEmitter.start(false, 10000, 1000);
+        this.leafWindEmitter.start(
+            this.genome.leaf.wind_emitter.start_explode, 
+            this.genome.leaf.wind_emitter.start_lifespan, 
+            this.genome.leaf.wind_emitter.start_frequency);
 
         // Initial draw call
         this.draw();
@@ -144,7 +141,7 @@ define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_
                 this._treeHeight = this.game.world.height - current.x
             }
 
-            graphics.lineStyle(current.config.strength, 0x37220f, 1);
+            graphics.lineStyle(current.config.strength, this.genome.trunk_color, 1);
             graphics.lineTo(current.x, current.y);
 
             if (current.children.length == 0 && stack.length > 0) {
@@ -158,13 +155,13 @@ define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_
         // draw joins between branches
         stack = [this.root];
         graphics.lineWidth = 0;
-        graphics.beginFill(0x37220f, 1);
+        graphics.beginFill(this.genome.trunk_color, 1);
         graphics.moveTo(this.root.line.start.x, this.root.line.start.y);
         this.traverseBranches(function(branch){
             graphics.drawCircle(
                 branch.line.end.x,
                 branch.line.end.y,
-                branch.config.strength);
+                branch.config.strength * this.genome.trunk_joint_size);
         }, this);
         graphics.endFill();
 
@@ -181,8 +178,8 @@ define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_
         }, this);
 
         // update wind leave emitter
-        this.leafWindEmitter.height = this._treeHeight * 0.75;
-        this.leafWindEmitter.emitY = (game.world.height - this._treeHeight/2);
+        this.leafWindEmitter.height = this._treeHeight * this.genome.leaf.wind_emitter.tree_relative_height;
+        this.leafWindEmitter.emitY = (game.world.height - this._treeHeight * this.genome.leaf.wind_emitter.tree_relative_emit_y);
 
         return this;
     };
