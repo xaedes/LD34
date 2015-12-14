@@ -171,7 +171,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         var p = this.line.random();
         window.tree.leafEmitter.x = p.x;
         window.tree.leafEmitter.y = p.y;
-        window.tree.leafEmitter.start(true, 5000, null, (this.config.length / 15) + 1);
+        window.tree.leafEmitter.start(true, Math.max(100,Helper.randomNormal(500,500)), null, (this.config.length / 60) + 1);
 
         this.children.forEach(function(child) {
             child.dropLeavesAnimation();
@@ -261,7 +261,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         p.x += Helper.randomNormal(0, 1) * this.tree.leafs.leaf_displacement_x;
         p.y += Helper.randomNormal(0, 1) * this.tree.leafs.leaf_displacement_y;
 
-        if (this.tree.leafDensity.get(this.line.end.x + p.x, this.line.end.y + p.y) >= 10) {
+        if (this.tree.leafDensity.get(this.line.end.x + p.x, this.line.end.y + p.y) >= 2) {
             return;
         }
 
