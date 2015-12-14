@@ -9,13 +9,12 @@ define(['phaser', 'helper', 'objects/tree_evaluator', 'quests/quest'],
         this.secondsToWin = 10;
         this.max_tier = 100;
         this.difficulty = this.tier/this.max_tier;
-        this.size = 1-0.9*this.difficulty;
+        this.size = 0.5*this.difficulty;
         this.condition = {
             sum: Helper.lerp(15,20,this.difficulty),
             sum_middle: Helper.lerp(10,0,this.difficulty)
         };
         this.description = "Grow a tree, with leafs but leaf a hole in the middle.";
-        this.description += "\n" + this.condition.sum + ";" + this.condition.sum_middle;
         this.description += "\nYou can have at most " + Math.floor(this.condition.sum_middle) + " leaves in the middle";
         this.description += "\nYou need at least " + Math.ceil(this.condition.sum) + " leaves on the tree.";
         this.on_the_way_msg = "This looks good!";
