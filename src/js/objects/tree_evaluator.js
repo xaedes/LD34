@@ -15,7 +15,7 @@ define(['phaser'], function(Phaser) {
         var sum_upper = this.tree.leafDensity.getAreaSummedLocal(0,0,w,h2);
         var sum_lower = this.tree.leafDensity.getAreaSummedLocal(0,h2,w,h2);
 
-        var success = ((sum_upper < 5) && (sum_lower > 15));
+        var success = ((sum_upper < 5) && (sum_lower > 1));
         return success;
     };
     TreeEvaluator.prototype.leafsInUpperHalf = function() {
