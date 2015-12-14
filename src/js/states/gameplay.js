@@ -1,13 +1,28 @@
 'use strict';
 
-define(['phaser', 'objects/tree'],
-    function(Phaser, Tree) {
+define(['phaser', 'objects/tree', 'objects/tree_evaluator'],
+    function(Phaser, Tree, TreeEvaluator) {
 
     function GameplayState() {}
 
     GameplayState.prototype = {
         create: function() {
             this.tree = new Tree(this.game);
+            this.treeEvaluator = new TreeEvaluator(this.tree);
+
+            this.questText = this.game.add.text(
+                this.game.world.centerX,0, "", 
+                {font: "20px shmupfont", fill: "#ffffff", stroke: '#000000', strokeThickness: 3});
+            this.questText.fixedToCamer = false;
+            this.questText.anchor.setTo(0.5, 0.0);
+
+            this.currentEvaluator = "leafsInLowerHalf";
+            // title_text.wordWrap = true;
+            // title_text.wordWrapWidth = (0.95 * this.game.world.width);
+            // title_text.alpha = 0;
+            // title_text.scale.x = 0;
+            // title_text.scale.y = 0;
+
 
             this.graphics = game.add.graphics(0, 0);
             this.cutLine = undefined;
@@ -16,8 +31,19 @@ define(['phaser', 'objects/tree'],
 
         },
 
+        setQuestText: function(evaluationResult) {
+            if(evaluationResult.success){
+                this.questText.setText(evaluationResult.success_msg);
+            } else {
+                this.questText.setText(evaluationResult.quest_title + ":" + evaluationResult.quest_msg);
+            }
+        },
+
         update: function() {
-            this.graphics.clear();
+            this.graphics.clear(); 
+
+            var result = this.treeEvaluator[this.currentEvaluator]();
+            this.setQuestText(result);
 
             if (this.game.input.mousePointer.isDown) {
                 if (this.cutLine) {

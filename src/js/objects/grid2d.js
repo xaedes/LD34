@@ -117,6 +117,7 @@ define(['phaser'], function(Phaser) {
                 }
             }
         }
+        return sum;
     };
 
     Grid2d.prototype._toLocal = function (x, y) {
