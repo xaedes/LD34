@@ -5,20 +5,22 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         this.game = game;
         this.genome = genome;
         // used to generate leaf points
-        this.leaf_width = this.genome.width;
-        this.leaf_height = this.genome.height;
+        this.leaf_width_min = this.genome.width_min;
+        this.leaf_width_max = this.genome.width_max;
+        this.leaf_height_min = this.genome.height_min;
+        this.leaf_height_max = this.genome.height_max;
 
         // as we want to draw more than one leaf per frame, we need a little bit more space
         // specify here how much
         this.padding = this.genome.padding;
 
         // size of actual drawing area 
-        this.frame_width = this.leaf_width + this.padding * 2;
-        this.frame_height = this.leaf_height + this.padding * 2;
+        this.frame_width = this.leaf_width_max + this.padding * 2;
+        this.frame_height = this.leaf_height_max + this.padding * 2;
 
         // factors to multiply normal(0,1) random variable with to get properly scaled random leaf displacement
-        this.leaf_displacement_x = this.leaf_width * this.genome.displacement_x;
-        this.leaf_displacement_y = this.leaf_height * this.genome.displacement_y;
+        this.leaf_displacement_x = this.genome.displacement_x;
+        this.leaf_displacement_y = this.genome.displacement_y;
 
         // how many leafs per frame?
         this.leafs_per_frame_min = this.genome.leafs_per_frame_min;
@@ -71,10 +73,11 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
                 atlasData.frames.push({frame: {x: x, y: y, w: this.frame_width, h: this.frame_height}});
             }
             for(var k = 1; k <= this.leafs_per_frame_max; ++k) {
-                var rx = Helper.randomNormal(0, 1) * this.leaf_displacement_x;
-                var ry = Helper.randomNormal(0, 1) * this.leaf_displacement_y;
-
-                var leaf = this.generateLeaf(this.leaf_width, this.leaf_height, 0.25, this.padding + rx, this.padding + ry);
+                var leaf_width = this.game.rnd.integerInRange(this.leaf_width_min,this.leaf_width_max);
+                var leaf_height = this.game.rnd.integerInRange(this.leaf_height_min,this.leaf_height_max);
+                var rx = Helper.randomNormal(0, 1) * this.leaf_displacement_x * leaf_width;
+                var ry = Helper.randomNormal(0, 1) * this.leaf_displacement_y * leaf_height;
+                var leaf = this.generateLeaf(leaf_width, leaf_height, 0.25, this.padding + rx, this.padding + ry);
 
                 var color = this.pickColor();
 

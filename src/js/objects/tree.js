@@ -34,8 +34,8 @@ define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_
         this.groundBrush = new LeafSprites(this.game, this.genome.ground_brush);
         this.groundImage = new RenderTextureImage(this.game);
 
-        this.game.world.add(this.leafsImage);
         this.game.world.add(this.groundImage);
+        this.game.world.add(this.leafsImage);
 
         this.root = new Branch(
             game,
@@ -175,8 +175,8 @@ define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_
     };
 
 
-    Tree.prototype.drawGround = function(n) {
-        n = n || 1000
+    Tree.prototype.drawGround = function() {
+        var n = this.genome.ground_brush.num;
         this.groundImage.tex.clear();
         for(var i = 0; i < n; i++){
             var x = Helper.randomNormal(this.game.world.width/2,this.game.world.width/4);

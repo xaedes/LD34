@@ -6,15 +6,15 @@ define(['phaser','helper'], function(Phaser,Helper) {
         // parameter class to hold all parameters relevant to generate a tree
         this.leaf_density_resolution = 80;
         this.branch_density_resolution = 80;
-        this.start_branch_config = {
-        };
         this.grow_rate = 1000 / 25;
         this.grow_count = 15;
         this.slow_grow = 0.1;
         this.slow_grow_rate = 1000 / 2;
         this.leaf = {
-            width: 16,
-            height: 16,
+            width_min: 8,
+            width_max: 32,
+            height_min: 16,
+            height_max: 16,
             padding: 32,
             displacement_x: 0.6, // * leaf_width
             displacement_y: 0.6, // * leaf_height
@@ -71,24 +71,27 @@ define(['phaser','helper'], function(Phaser,Helper) {
             }
         };
         this.ground_brush = {
-            width: 32,
-            height: 32,
-            padding: 48,
+            width_min: 8,
+            width_max: 32,
+            height_min: 8,
+            height_max: 16,
+            padding: 16,
             displacement_x: 0.6, // * leaf_width
             displacement_y: 0.6, // * leaf_height
             leafs_per_frame_min: 5, 
             leafs_per_frame_max: 10, 
             alpha: 0.6, 
-            num_frames: 32, 
+            num_frames: 100, 
             colormap: "colormap",
             name: "ground_brush",
+            num: 5000
         };
         this.trunk_color = 0x37220f;
         this.trunk_joint_size = 1;
         this.branch = {
             start_config: {
                 angle: -90,
-                length: 15,
+                length: 50,
                 strength: 20,
                 year: 10,
                 radius: 50
