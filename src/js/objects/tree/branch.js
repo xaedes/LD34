@@ -19,7 +19,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         this._addRandomLeaf();
     }
 
-    Branch.prototype = Object.create(Phaser.Group.prototype);
+    // Branch.prototype = Object.create(Phaser.Group.prototype);
     Branch.prototype.constructor = Branch;
 
 
