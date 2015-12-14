@@ -59,21 +59,34 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
         return undefined;
     };
 
+    Branch.prototype.jointDynamics = function () {
+        // angular movement
+        this.config.angle += this.config.angle_rate;
+
+        // add random force to create angular movement
+        this.config.angle_rate += this.tree.genome.branch.jointDynamics.angle_rate_rate(this.config);
+
+        // force angle back to its original_angle
+        this.config.angle = Helper.gainFilter(this.config.angle,this.config.original_angle,this.tree.genome.branch.jointDynamics.originalAngleGain);
+
+        // let original_angle very slowly adapt
+        this.config.original_angle = Helper.gainFilter(this.config.original_angle,this.config.angle,this.tree.genome.branch.jointDynamics.originalAngleAdaptionGain);
+
+        // force angle to targetAngle if is too different from it
+        var targetAngle = this.tree.genome.branch.jointDynamics.targetAngle;
+        var targetAngleDeadZone = this.tree.genome.branch.jointDynamics.targetAngleDeadZone;
+        var targetAngleGain = this.tree.genome.branch.jointDynamics.targetAngleGain;
+        if (Math.abs(this.config.angle - (targetAngle))>targetAngleDeadZone){
+            this.config.angle = Helper.gainFilter(this.config.angle,targetAngle,targetAngleGain);
+        }
+    };
+
     Branch.prototype.grow = function () {
         this.config.length += 12 * (Math.abs(Helper.randomNormal(this.pheromone[0], 0.1))) / (1+(this.config.year)/5);
         this.config.strength += (this.pheromone[1] - 1)  / (1+(this.config.year)/5);
 
-        // control angle 
-        this.config.angle += this.config.angle_rate;
-        this.config.angle_rate += Helper.randomNormal(0,1/(1+0.5*this.config.strength*Math.sqrt(this.config.year)));
+        this.jointDynamics();
 
-        var targetAngle = -90;
-        this.config.angle = Helper.gainFilter(this.config.angle,this.config.original_angle,0.9);
-        this.config.original_angle = Helper.gainFilter(this.config.original_angle,this.config.angle,0.999);
-
-        if (Math.abs(this.config.angle - (targetAngle))>180){
-            this.config.angle = Helper.gainFilter(this.config.angle,targetAngle,0.99);
-        }
         // // console.log(this.config.angle);
         this.config.angle_rate = Helper.gainFilter(this.config.angle_rate,0,0.90);
 

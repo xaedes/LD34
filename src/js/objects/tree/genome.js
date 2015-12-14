@@ -1,6 +1,6 @@
 'use strict';
 
-define(['phaser'], function(Phaser) {
+define(['phaser','helper'], function(Phaser,Helper) {
     function Genome(game) {
         this.game = game;
         // parameter class to hold all parameters relevant to generate a tree
@@ -89,6 +89,16 @@ define(['phaser'], function(Phaser) {
             },
             grow: {
 
+            },
+            jointDynamics: {
+                angle_rate_rate: function(config) {
+                    return Helper.randomNormal(0,1/(1+0.5*config.strength*Math.sqrt(config.year)));
+                },
+                targetAngle: -90,
+                targetAngleDeadZone: 180,
+                targetAngleGain: 0.99,
+                originalAngleGain: 0.9,
+                originalAngleAdaptionGain: 0.999,
             }
         }
 
