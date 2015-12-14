@@ -124,7 +124,7 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
     LeafSprites.prototype.constructor = LeafSprites;
 
     LeafSprites.prototype.setFrame = function (frame_idx, num) {
-        this.sprite.frame = Math.min(frame_idx * (this.leafs_per_frame_max-this.leafs_per_frame_min+1),this.leafs_per_frame_min) + num - this.leafs_per_frame_min;
+        this.sprite.frame = frame_idx * (this.leafs_per_frame_max-this.leafs_per_frame_min+1) + Math.min(Math.max(num,this.leafs_per_frame_min),this.leafs_per_frame_max) - this.leafs_per_frame_min;
     };
     LeafSprites.prototype.pickColor = function () {
         // pick a color from a random pixel in colormap
