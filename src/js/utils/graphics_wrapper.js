@@ -7,9 +7,11 @@ define(['phaser'], function(Phaser) {
             parent = game.world;
         }
 
-        this.group = game.add.group(parent);
-
         this.game = game;
+
+        this.group = game.add.group(parent);
+        this.drawingTexture = this.game.add.renderTexture(this.game.width, this.game.height);
+        this.image = this.game.add.image(game, 0, 0, this.drawingTexture);
         this._x = x;
         this._y = y;
 
@@ -19,11 +21,28 @@ define(['phaser'], function(Phaser) {
         this.unused = [];
     }
 
+    GraphicsWrapper.prototype.flush = function () {
+        // flush operations
+        this.group.update();
+
+        // generate image from last drawn frame
+        var tex = this.group.generateTexture();
+        var img = new Phaser.Image(this.game, 0, 0, tex);
+        // and copy it into our drawingTexture
+        this.drawingTexture.renderRawXY(img,0,0);
+
+        // now remove all graphics
+        while(this.graphics.length>0){
+            var g = this.graphics.pop();
+            g.clear();
+            this.unused.push(g);
+        }
+    };
     GraphicsWrapper.prototype.clear = function () {
+        this.drawingTexture.clear();
         while(this.graphics.length) {
             var g = this.graphics.pop();
             g.clear();
-
             this.unused.push(g);
         }
     };
@@ -75,6 +94,7 @@ define(['phaser'], function(Phaser) {
         }
 
         if (this.graphics.length == 0 || last.graphicsData.length >= 500) {
+            // this.flush();
             var newG;
             if (this.unused.length) {
                 newG = this.unused.pop();
@@ -103,10 +123,18 @@ define(['phaser'], function(Phaser) {
     ////
     Object.defineProperty(GraphicsWrapper.prototype, "lineWidth", {
         get: function () {
-            return this._getLast(true).lineWidth;
+            var last = this._getLast(true);
+            if(last){
+                return last.lineWidth;
+            } else {
+                return undefined;
+            }
         },
         set: function (value) {
-            this._getLast(true).lineWidth = value;
+            var last = this._getLast(true);
+            if(last){
+                last.lineWidth = value;
+            }
         }
     });
 
