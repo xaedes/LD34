@@ -78,7 +78,7 @@ define(["phaser"], function(Phaser) {
             return value * gain + (1-gain) * otherValue;
         },
         "lerp": function(from, to, x) {
-            return (to-from)*x+to;
+            return (to-from)*x+from;
         }
     };
 });
