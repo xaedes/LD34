@@ -6,6 +6,8 @@ define(['phaser','helper'], function(Phaser,Helper) {
         // parameter class to hold all parameters relevant to generate a tree
         this.leaf_density_resolution = 80;
         this.branch_density_resolution = 80;
+        this.x = 0.5;
+        this.y = 0.90;
         this.grow_rate = 1000 / 25;
         this.grow_count = 15;
         this.slow_grow = 0.1;

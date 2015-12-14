@@ -8,8 +8,8 @@ define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_
         // super constructor
         Phaser.Group.call(this, game, game.world, 'tree', true, true, Phaser.Physics.ARCADE);
         this.genome = new Genome(game);
-        this._x = game.width / 2;
-        this._y = game.height;
+        this._x = game.width * this.genome.x;
+        this._y = game.height * this.genome.y;
         window.tree_graphics = new GraphicsWrapper(game, 0, 0);
         window.tree = this;
         this.tree = this;
