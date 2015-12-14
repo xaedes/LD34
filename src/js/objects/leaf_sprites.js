@@ -111,6 +111,7 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
     }
 
     LeafSprites.prototype = Object.create(Phaser.Image.prototype);
+    LeafSprites.prototype.constructor = LeafSprites;
 
     LeafSprites.prototype.pickColor = function () {
         // pick a color from a random pixel in colormap

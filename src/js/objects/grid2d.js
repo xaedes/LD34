@@ -16,6 +16,7 @@ define(['phaser'], function(Phaser) {
 
         this.sum = 0;
     }
+    Grid2d.prototype.constructor = Grid2d;
 
     Grid2d.prototype.clear = function (x, y) {
         for (var i = 0; i < this.width; i++) {
@@ -101,6 +102,21 @@ define(['phaser'], function(Phaser) {
         }
 
         return average;
+    };
+    Grid2d.prototype.getAreaSummed = function (x,y,w,h) {
+        var start = this._toLocal(x,y);
+        var end = this._toLocal(x+w,y+h);
+        return this.getAreaSummedLocal(start[0],start[1],end[0]-start[0],end[1]-start[1]);
+    };
+    Grid2d.prototype.getAreaSummedLocal = function (x,y,w,h) {
+        var sum=0;
+        for(var i=x;i<x+w;i++){
+            for(var j=y;j<y+h;j++){
+                if((i>=0)&&(i<this.width)&&(j>=0)&&(j<this.height)){
+                    sum += this.grid[i][j];
+                }
+            }
+        }
     };
 
     Grid2d.prototype._toLocal = function (x, y) {
