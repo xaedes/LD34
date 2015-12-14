@@ -12,10 +12,13 @@ define(['phaser', 'objects/tree', 'objects/tree_evaluator',
             this.treeEvaluator = new TreeEvaluator(this.tree);
 
             this.quests = [];
-            this.quests.push(new MasterOfEarth(this.game, this.treeEvaluator, 1));
-            this.quests.push(new MasterOfSky(this.game, this.treeEvaluator, 1));
-            this.quests.push(new MasterOfZero(this.game, this.treeEvaluator, 1));
-            this.currentQuest = this.quests[0];
+            for(var i=1;i<10;i++){
+                this.quests.push(new MasterOfEarth(this.game, this.treeEvaluator, i));
+                this.quests.push(new MasterOfSky(this.game, this.treeEvaluator, i));
+                this.quests.push(new MasterOfZero(this.game, this.treeEvaluator, i));
+            }
+            this.quest_counter = 0;
+            this.currentQuest = this.quests[this.quest_counter];
 
             this.graphics = game.add.graphics(0, 0);
             this.cutLine = undefined;
@@ -28,6 +31,14 @@ define(['phaser', 'objects/tree', 'objects/tree_evaluator',
             this.graphics.clear(); 
 
             this.currentQuest.update();
+            if (this.currentQuest.won) {
+                this.currentQuest.fadeOut(function(){
+                    console.log("LevelUp");
+                    this.currentQuest.cleanUp();
+                    this.quest_counter++;
+                    this.currentQuest = this.quests[this.quest_counter];
+                },this);
+            }
 
             if (this.game.input.mousePointer.isDown) {
                 if (this.cutLine) {

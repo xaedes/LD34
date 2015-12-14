@@ -5,8 +5,8 @@ define(['phaser', 'helper', 'objects/tree_evaluator', 'quests/quest'],
 
     function MasterOfEarth(game, treeEvaluator, tier) {
         Quest.call(this, game, treeEvaluator, tier);
-        this.title = "Master Of Earth";
-        this.secondsToWin = 10;
+        this.title = tier+".Master Of Earth";
+        this.secondsToWin = 3;
         this.max_tier = 100;
         this.difficulty = this.tier/this.max_tier;
         this.size = 1-0.9*this.difficulty;
@@ -24,9 +24,17 @@ define(['phaser', 'helper', 'objects/tree_evaluator', 'quests/quest'],
     MasterOfEarth.prototype = Object.create(Quest.prototype);
     MasterOfEarth.prototype.constructor = MasterOfEarth;
     MasterOfEarth.prototype.evaluate = function() {
-        this.success = this.treeEvaluator.leafsInLowerHalf(this.size,this.condition);
+        this.evaluation = this.treeEvaluator.leafsInLowerHalf(this.size,this.condition);
+        this.success = this.evaluation.success;
         return this.success;
     };
+    MasterOfEarth.prototype.progressMsg = function() {
+        var msg = "";
+        msg += Math.floor(this.evaluation.sum_upper) + " / " + Math.floor(this.condition.sum_upper) + " in upper part\n";
+        msg += Math.ceil(this.evaluation.sum_lower) + " / " + Math.ceil(this.condition.sum_lower) + " in lower part";
+        return msg;
+    };
+
     return MasterOfEarth;
 });
 
