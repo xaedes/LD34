@@ -41,7 +41,7 @@ define(['phaser'], function(Phaser) {
         var w = this.tree.leafDensity.width;
         var h = this.tree.leafDensity.height;
         var w2 = Math.ceil(w/2);
-        var h2 = Math.ceil(w/2);
+        var h2 = Math.ceil(h/2);
         var w2_hole = Math.ceil(w*size/2);
         var h2_hole = Math.ceil(h*size/2);
         var sum_middle = this.tree.leafDensity.getAreaSummedLocal(w2-w2_hole,h2-h2_hole,2*w2_hole,2*h2_hole);

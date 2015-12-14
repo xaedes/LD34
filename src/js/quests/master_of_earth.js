@@ -9,7 +9,7 @@ define(['phaser', 'helper', 'objects/tree_evaluator', 'quests/quest'],
         this.secondsToWin = 10;
         this.max_tier = 100;
         this.difficulty = this.tier/this.max_tier;
-        this.size = 1-0.9*this.difficulty;
+        this.size = Helper.lerp(0.75,0.1,this.difficulty);
         this.condition = {
             sum_upper: Helper.lerp(1,4,this.difficulty),
             sum_lower: Helper.lerp(1,20,this.difficulty)
@@ -32,6 +32,17 @@ define(['phaser', 'helper', 'objects/tree_evaluator', 'quests/quest'],
         msg += Math.floor(this.evaluation.sum_upper) + " / " + Math.floor(this.condition.sum_upper) + " in upper part\n";
         msg += Math.ceil(this.evaluation.sum_lower) + " / " + Math.ceil(this.condition.sum_lower) + " in lower part";
         return msg;
+    };
+    MasterOfEarth.prototype.draw = function() {
+        var graphics = this.gui.graphics;
+        var h = this.treeEvaluator.tree.leafDensity.height;
+        var h_lower = Math.ceil(h*this.size);
+        var res = this.treeEvaluator.tree.genome.leaf_density_resolution;
+        var y = (h-h_lower)*res;
+        graphics.clear();
+        graphics.lineStyle(2, 0xaf0000, 1);
+        graphics.moveTo(0,y);
+        graphics.lineTo(this.game.world.width-1,y);
     };
 
     return MasterOfEarth;

@@ -29,6 +29,7 @@ define(['phaser', 'objects/tree_evaluator'], function(Phaser,TreeEvaluator) {
         this.popupText.original_y = this.popupText.y;
 
         this.graphics = this.game.add.graphics(0,0);
+        this.game.world.add(this.graphics);
         this._fading = false;
         
     }

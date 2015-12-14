@@ -20,6 +20,7 @@ define(['phaser', 'objects/tree', 'objects/tree_evaluator', 'gui/quest_gui',
             }
             this.quest_counter = 0;
             this.currentQuest = this.quests[this.quest_counter];
+            this.currentQuest.activate();
 
             this.graphics = game.add.graphics(0, 0);
             this.cutLine = undefined;

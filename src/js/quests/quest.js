@@ -15,7 +15,6 @@ define(['phaser', 'objects/tree_evaluator'], function(Phaser,TreeEvaluator) {
         this.tier = tier;
         this.max_tier = 0;
 
-
     }
     Quest.prototype.constructor = Quest;
 
@@ -25,6 +24,7 @@ define(['phaser', 'objects/tree_evaluator'], function(Phaser,TreeEvaluator) {
 
     Quest.prototype.activate = function() {
         this.gui.reset();
+        this.draw();
     };
 
      Quest.prototype.deactivate = function() {
