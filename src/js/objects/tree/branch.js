@@ -69,6 +69,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
 
         var targetAngle = -90;
         this.config.angle = Helper.gainFilter(this.config.angle,this.config.original_angle,0.9);
+        this.config.original_angle = Helper.gainFilter(this.config.original_angle,this.config.angle,0.999);
 
         if (Math.abs(this.config.angle - (targetAngle))>180){
             this.config.angle = Helper.gainFilter(this.config.angle,targetAngle,0.99);
