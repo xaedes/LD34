@@ -1,7 +1,8 @@
 'use strict';
 
-define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf_sprites', 'objects/grid2d'],
-    function(Phaser, Genome, Branch, GraphicsWrapper, LeafSprites, Grid2d) {
+define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_wrapper', 'objects/leaf_sprites', 'objects/grid2d',
+        'objects/render_texture_image'],
+    function(Phaser, Genome, Branch, GraphicsWrapper, LeafSprites, Grid2d, RenderTextureImage) {
 
     function Tree(game, x, y) {
         // super constructor
@@ -27,7 +28,8 @@ define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_
 
         // Intialize leaf rendering
         this.leafs = new LeafSprites(this.game, this);
-        this.game.world.add(this.leafs);
+        this.leafsImage = new RenderTextureImage(this.game);
+        this.game.world.add(this.leafsImage);
 
         this.root = new Branch(
             game,
@@ -168,10 +170,10 @@ define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_
 
         // draw leaves
         this.leafDensity.clear();
-        this.leafs.drawingTexture.clear();
+        this.leafsImage.tex.clear();
         this.traverseBranches(function(branch) {
             branch.leafs.forEach(function(leaf) {
-                leaf.draw(this.leafs);
+                leaf.draw(this.leafs, this.leafsImage);
 
                 // update leafDensity
                 this.leafDensity.add(branch.line.end.x + leaf.x, branch.line.end.y + leaf.y);

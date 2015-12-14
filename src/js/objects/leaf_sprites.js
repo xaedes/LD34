@@ -101,16 +101,8 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         // should be kept here for reference
         // inspired from 
         // http://laxvikinggames.blogspot.de/2015/01/build-dynamic-texture-atlas-in-phaser.html
-
-        // generate texture that fills complete screen, that we draw to
-        this.drawingTexture = this.game.add.renderTexture(this.game.width, this.game.height);
-
-        // call super constructor with our generated Texture
-        Phaser.Image.call(this, game, 0, 0, this.drawingTexture);
-        this.frame = 0;
     }
 
-    LeafSprites.prototype = Object.create(Phaser.Image.prototype);
     LeafSprites.prototype.constructor = LeafSprites;
 
     LeafSprites.prototype.pickColor = function () {
