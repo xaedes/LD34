@@ -13,8 +13,8 @@ define(['phaser','helper'], function(Phaser,Helper) {
         this.slow_grow = 0.1;
         this.slow_grow_rate = 1000 / 2;
         this.leaf = {
-            width_min: 8,
-            width_max: 32,
+            width_min: 16,
+            width_max: 16,
             height_min: 16,
             height_max: 16,
             padding: 32,
@@ -184,7 +184,7 @@ define(['phaser','helper'], function(Phaser,Helper) {
             _addRandomLeaf: {
                 randomPointMin: 0,
                 randomPointMax: 0.9,
-                maxLeafDensity: 3
+                maxLeafDensity: 10
             }
         };
     }
