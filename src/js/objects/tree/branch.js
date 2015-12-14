@@ -31,14 +31,14 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
             level: this.config.level + 1,
             angle: this.config.angle + this.game.rnd.integerInRange(-branch_config.radius, branch_config.radius),
             length: this.game.rnd.realInRange(1, 3),
-            strength: this.game.rnd.realInRange(4, this.config.strength),
+            strength: this.game.rnd.realInRange(Math.min(4, this.config.strength), Math.min(this.config.strength, 10)),
             year: 0
         };
 
         // check if enough space is free
         var line = new Phaser.Line();
         line.fromAngle(this.x, this.y, config.angle);
-        if (this.tree.branchDensity.getLine(line) > 4.5) {
+        if (this.tree.branchDensity.getLine(line) > 10.5) {
             return undefined;
         }
 
@@ -100,7 +100,9 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
 
 
         // Generate new leaves
-        if (this.leafs.length / this.config.length < this.game.rnd.realInRange(0,0.1)) {
+        if (this.leafs.length / this.config.length < this.game.rnd.realInRange(0,0.1) &&
+            this.config.strength < this.game.rnd.integerInRange(5, 15)
+        ) {
             this._addRandomLeaf();
         }
 

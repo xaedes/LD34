@@ -74,7 +74,7 @@ define(['phaser'], function(Phaser) {
             return last;
         }
 
-        if (this.graphics.length == 0 || last.graphicsData.length >= 750) {
+        if (this.graphics.length == 0 || last.graphicsData.length >= 500) {
             var newG;
             if (this.unused.length) {
                 newG = this.unused.pop();
