@@ -6,33 +6,28 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         this.tree = tree;
 
         // used to generate leaf points
-        this.leaf_width = 16;
-        this.leaf_height = 16;
+        this.leaf_width = this.tree.genome.leaf.width;
+        this.leaf_height = this.tree.genome.leaf.height;
 
         // as we want to draw more than one leaf per frame, we need a little bit more space
         // specify here how much
-        this.padding = 32;
+        this.padding = this.tree.genome.leaf.padding;
 
         // size of actual drawing area 
         this.frame_width = this.leaf_width + this.padding * 2;
         this.frame_height = this.leaf_height + this.padding * 2;
 
         // factors to multiply normal(0,1) random variable with to get properly scaled random leaf displacement
-        this.leaf_displacement_x = this.leaf_width * 0.6;
-        this.leaf_displacement_y = this.leaf_height * 0.6;
+        this.leaf_displacement_x = this.leaf_width * this.tree.genome.leaf.displacement_x;
+        this.leaf_displacement_y = this.leaf_height * this.tree.genome.leaf.displacement_y;
 
         // how many leafs per frame?
-        this.leafs_per_frame = 20;
+        this.leafs_per_frame = this.tree.genome.leaf.leafs_per_frame;
 
-        // rustling leaves animation paramaters
-        this.anim_len = 10;
-        this.rustling = 10;
-        this.color_rustling = 2;
-
-        this.leaf_alpha = 0.3;
+        this.leaf_alpha = this.tree.genome.leaf.alpha;
 
         // how many frames
-        this.num_frames = 50;
+        this.num_frames = this.tree.genome.leaf.num_frames;
 
         // this holds our frames
         var bm = this.game.add.bitmapData(this.frame_width * this.leafs_per_frame, this.frame_height * this.num_frames);
@@ -66,7 +61,7 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
 
                 var color = this.pickColor();
 
-                graphics.beginFill(color, 0.6);
+                graphics.beginFill(color, this.leaf_alpha);
                 graphics.drawPolygon(leaf);
                 graphics.endFill();
 
@@ -111,22 +106,12 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         var y = this.game.rnd.integerInRange(0, this.colormap.height);
         var color = this.colormap.getPixelRGB(x, y);
 
+        // swap byte order
         color = color.r * 0x010000 + color.g * 0x000100 + color.b * 0x000001; // + color.a;
 
         return color;
     };
 
-    LeafSprites.prototype.rustleLeaf = function (leaf) {
-        var newPoints=[];
-        leaf.points.forEach(function(point){
-            var newPoint = {
-                x: point.x + Helper.randomNormal(this.game.rnd, 0, this.rustling),
-                y: point.y + Helper.randomNormal(this.game.rnd, 0, this.rustling)
-            };
-            newPoints.push(newPoint);
-        },this);
-        return new Phaser.Polygon(newPoints);
-    };
 
 
     LeafSprites.prototype.generateLeaf = function (width, height, minArea, x, y) {
