@@ -31,7 +31,7 @@ define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_
         this.leafsImage = new RenderTextureImage(this.game);
         
         // Initialize ground rendering
-        this.groundBrush = new LeafSprites(this.game, this.genome.ground_brush);
+        this.groundBrush = new LeafSprites(this.game, this.genome.ground.brush);
         this.groundImage = new RenderTextureImage(this.game);
 
         this.game.world.add(this.groundImage);
@@ -176,11 +176,11 @@ define(['phaser', 'objects/tree/genome', 'objects/tree/branch', 'utils/graphics_
 
 
     Tree.prototype.drawGround = function() {
-        var n = this.genome.ground_brush.num;
+        var n = this.genome.ground.num;
         this.groundImage.tex.clear();
         for(var i = 0; i < n; i++){
-            var x = Helper.randomNormal(this.game.world.width/2,this.game.world.width/4);
-            var y = this.game.world.height - Math.abs(Helper.randomNormal(0,this.game.world.height/32));
+            var x = Helper.randomNormal(this.game.world.width/2,this.game.world.width*this.genome.ground.x_std);
+            var y = this.game.world.height * (1 - Math.abs(Helper.randomNormal(this.genome.ground.y_mean,this.genome.ground.y_std)));
             var frame = this.game.rnd.integerInRange(0,this.groundBrush.num_frames);
             var num = this.game.rnd.integerInRange(this.groundBrush.leafs_per_frame_min,this.groundBrush.leafs_per_frame_max);
             this.groundBrush.setFrame(frame, num);

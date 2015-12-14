@@ -72,21 +72,26 @@ define(['phaser','helper'], function(Phaser,Helper) {
                 tree_relative_emit_y: 0.5,
             }
         };
-        this.ground_brush = {
-            width_min: 8,
-            width_max: 32,
-            height_min: 8,
-            height_max: 16,
-            padding: 16,
-            displacement_x: 0.6, // * leaf_width
-            displacement_y: 0.6, // * leaf_height
-            leafs_per_frame_min: 5, 
-            leafs_per_frame_max: 10, 
-            alpha: 0.6, 
-            num_frames: 100, 
-            colormap: "colormap",
-            name: "ground_brush",
-            num: 5000
+        this.ground = {
+            brush: {
+                width_min: 8,
+                width_max: 32,
+                height_min: 8,
+                height_max: 16,
+                padding: 16,
+                displacement_x: 0.6, // * leaf_width
+                displacement_y: 0.6, // * leaf_height
+                leafs_per_frame_min: 5, 
+                leafs_per_frame_max: 10, 
+                alpha: 0.6, 
+                num_frames: 100, 
+                colormap: "colormap",
+                name: "ground_brush",
+            },
+            num: 5000,
+            x_std: 1/8,
+            y_std: 1/32,
+            y_mean: -1/32,
         };
         this.trunk_color = 0x37220f;
         this.trunk_joint_size = 1;
