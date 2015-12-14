@@ -1,7 +1,8 @@
 'use strict';
 
-define(['phaser', 'objects/tree', 'objects/tree_evaluator'],
-    function(Phaser, Tree, TreeEvaluator) {
+define(['phaser', 'objects/tree', 'objects/tree_evaluator', 
+    'quests/master_of_earth', 'quests/master_of_sky', 'quests/master_of_zero'],
+    function(Phaser, Tree, TreeEvaluator, MasterOfEarth, MasterOfSky, MasterOfZero) {
 
     function GameplayState() {}
 
@@ -10,19 +11,11 @@ define(['phaser', 'objects/tree', 'objects/tree_evaluator'],
             this.tree = new Tree(this.game);
             this.treeEvaluator = new TreeEvaluator(this.tree);
 
-            this.questText = this.game.add.text(
-                this.game.world.centerX,0, "", 
-                {font: "20px shmupfont", fill: "#ffffff", stroke: '#000000', strokeThickness: 3});
-            this.questText.fixedToCamer = false;
-            this.questText.anchor.setTo(0.5, 0.0);
-
-            this.currentEvaluator = "leafsInLowerHalf";
-            // title_text.wordWrap = true;
-            // title_text.wordWrapWidth = (0.95 * this.game.world.width);
-            // title_text.alpha = 0;
-            // title_text.scale.x = 0;
-            // title_text.scale.y = 0;
-
+            this.quests = [];
+            this.quests.push(new MasterOfEarth(this.game, this.treeEvaluator));
+            this.quests.push(new MasterOfSky(this.game, this.treeEvaluator));
+            this.quests.push(new MasterOfZero(this.game, this.treeEvaluator));
+            this.currentQuest = this.quests[0];
 
             this.graphics = game.add.graphics(0, 0);
             this.cutLine = undefined;
@@ -31,19 +24,10 @@ define(['phaser', 'objects/tree', 'objects/tree_evaluator'],
 
         },
 
-        setQuestText: function(evaluationResult) {
-            if(evaluationResult.success){
-                this.questText.setText(evaluationResult.success_msg);
-            } else {
-                this.questText.setText(evaluationResult.quest_title + ":" + evaluationResult.quest_msg);
-            }
-        },
-
         update: function() {
             this.graphics.clear(); 
 
-            var result = this.treeEvaluator[this.currentEvaluator]();
-            this.setQuestText(result);
+            this.currentQuest.update();
 
             if (this.game.input.mousePointer.isDown) {
                 if (this.cutLine) {

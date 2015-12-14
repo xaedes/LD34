@@ -65,7 +65,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
 
         // control angle 
         this.config.angle += this.config.angle_rate;
-        this.config.angle_rate += Helper.randomNormal(0,1/(1+1*this.config.strength*this.config.year));
+        this.config.angle_rate += Helper.randomNormal(0,1/(1+0.5*this.config.strength*Math.sqrt(this.config.year)));
 
         var targetAngle = -90;
         this.config.angle = Helper.gainFilter(this.config.angle,this.config.original_angle,0.9);
@@ -74,7 +74,7 @@ define(['phaser', 'helper','objects/tree/leaf'], function(Phaser, Helper, Leaf) 
             this.config.angle = Helper.gainFilter(this.config.angle,targetAngle,0.99);
         }
         // // console.log(this.config.angle);
-        this.config.angle_rate = Helper.gainFilter(this.config.angle_rate,0,0.99);
+        this.config.angle_rate = Helper.gainFilter(this.config.angle_rate,0,0.90);
 
         this._update();
         this.children.forEach(function (child) {
