@@ -6,7 +6,7 @@ define(['phaser'], function(Phaser) {
     MainIntroState.prototype = {
         create: function() {
             var title_text = this.game.add.text(this.game.world.centerX,this.game.world.centerY, 
-                "LD34", 
+                "Bonsai Master", 
                 {font: "200px shmupfont", fill: "#ffffff", stroke: '#000000', strokeThickness: 3});
             title_text.fixedToCamer = false;
             title_text.anchor.setTo(0.5, 0.5);

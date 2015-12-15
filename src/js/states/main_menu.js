@@ -8,7 +8,7 @@ define(['phaser'], function(Phaser) {
             var menu = this.game.add.group();
 
             var title_text = this.game.add.text(0,0, 
-                "LD34", 
+                "Bonsai Master", 
                 {font: "200px shmupfont", fill: "#ffffff", stroke: '#000000', strokeThickness: 3});
             title_text.anchor.setTo(0.5, 0.5);
             title_text.wordWrap = true;
