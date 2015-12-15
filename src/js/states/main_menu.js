@@ -23,8 +23,17 @@ define(['phaser'], function(Phaser) {
             subtitle_text.wordWrapWidth = (0.95 * this.game.world.width);
             subtitle_text.alpha = 1;
 
+            var instructions_text = this.game.add.text(0,130, 
+                "Instructions:\nPress G to grow\nUse Mouse to slice", 
+                {font: "18px shmupfont", fill: "#ffffff", stroke: '#000000', strokeThickness: 3});
+            instructions_text.anchor.setTo(0.5, 0.5);
+            instructions_text.wordWrap = true;
+            instructions_text.wordWrapWidth = (0.95 * this.game.world.width);
+            instructions_text.alpha = 1;
+
             menu.add(subtitle_text);
             menu.add(title_text);
+            menu.add(instructions_text);
 
             menu.x = this.game.world.centerX;
             menu.y = this.game.world.centerY;
