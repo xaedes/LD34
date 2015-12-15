@@ -7,7 +7,6 @@ require.config({
 
         // Libraries
         phaser: 'lib/phaser.debug',
-        socketio: '../../bower_components/socket.io-client/socket.io',
         helper: 'utils/helper'
     },
     // Sets the configuration for your third party scripts that are not AMD compatible
@@ -25,7 +24,7 @@ require.config({
 });
 
 // Initialize the application with the main application file.
-require(['phaser', 'app', "socketio"], function (Phaser, App, io) {
+require(['phaser', 'app'], function (Phaser, App) {
     var app = new App();
     app.start();
 });

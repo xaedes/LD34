@@ -1,6 +1,5 @@
 define([
         'phaser',
-        'socketio',
         'states/boot',
         'states/preload',
         'states/main_intro',
@@ -8,7 +7,6 @@ define([
         'states/level_master',
         'states/gameplay'],
     function(Phaser,
-             io,
              BootState,
              PreloadState,
              MainIntroState,
