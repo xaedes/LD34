@@ -33,8 +33,7 @@ define(['phaser', 'objects/tree_evaluator'], function(Phaser,TreeEvaluator) {
 
     Quest.prototype.update = function() {
         var success = this.evaluate();
-
-        this.gui.progressText.setText(this.progressMsg());
+        this.updateProgress();
         if(success && this.lastSuccess){
             var dt = this.game.time.time - this.lastTime;
             this.secondsSuccess += dt / 1000;

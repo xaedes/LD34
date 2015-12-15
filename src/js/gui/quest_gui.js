@@ -3,11 +3,11 @@
 define(['phaser', 'objects/tree_evaluator'], function(Phaser,TreeEvaluator) {
     function QuestGui(game) {
         this.game = game;
-        this.questText = this.game.add.text(
-            this.game.world.centerX,0, "", 
-            {font: "20px shmupfont", fill: "#ffffff", stroke: '#000000', strokeThickness: 3});
-        this.questText.fixedToCamer = false;
-        this.questText.anchor.setTo(0.5, 0.0);
+        // this.questText = this.game.add.text(
+        //     this.game.world.centerX,0, "", 
+        //     {font: "20px shmupfont", fill: "#ffffff", stroke: '#000000', strokeThickness: 3});
+        // this.questText.fixedToCamer = false;
+        // this.questText.anchor.setTo(0.5, 0.0);
 
         this.questText = this.game.add.text(
             this.game.world.centerX,0, "", 
@@ -16,10 +16,10 @@ define(['phaser', 'objects/tree_evaluator'], function(Phaser,TreeEvaluator) {
         this.questText.anchor.setTo(0.5, 0.0);
 
         this.progressText = this.game.add.text(
-            this.game.world.centerX,this.game.world.height - 50, "", 
+            0.05 * this.game.world.width,this.game.world.height - 50, "", 
             {font: "20px shmupfont", fill: "#ffffff", stroke: '#000000', strokeThickness: 3});
         this.progressText.fixedToCamer = false;
-        this.progressText.anchor.setTo(0.5, 1.0);
+        this.progressText.anchor.setTo(0, 0.5);
 
         this.popupText = this.game.add.text(
             this.game.world.centerX,80, "", 

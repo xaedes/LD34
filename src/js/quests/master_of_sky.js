@@ -15,8 +15,8 @@ define(['phaser', 'helper', 'objects/tree_evaluator', 'quests/quest'],
             sum_upper: Helper.lerp(15,20,this.difficulty)
         };
         this.description = "Grow a tree, with only the upper half of the screen filled with leafs.";
-        this.description += "\nYou can have at most " + Math.floor(this.condition.sum_upper) + " leaves in the lower part";
-        this.description += "\nYou need at least " + Math.ceil(this.condition.sum_lower) + " leaves in the upper part";
+        this.description += "\nYou need at least " + Math.floor(this.condition.sum_upper) + " leaves in the upper part";
+        this.description += "\nYou can have at most " + Math.floor(this.condition.sum_lower) + " leaves in the lower part";
         this.on_the_way_msg = "This looks good!";
         this.success_msg = "With your will to rise upwards you mastered the Sky. I shall now call you Master Of Sky.";
     }
@@ -29,9 +29,17 @@ define(['phaser', 'helper', 'objects/tree_evaluator', 'quests/quest'],
     };
     MasterOfSky.prototype.progressMsg = function() {
         var msg = "";
-        msg += Math.ceil(this.evaluation.sum_lower) + " / " + Math.ceil(this.condition.sum_lower) + " in lower part\n";
-        msg += Math.floor(this.evaluation.sum_upper) + " / " + Math.floor(this.condition.sum_upper) + " in upper part";
+        msg += Math.floor(this.evaluation.sum_upper) + " / " + Math.floor(this.condition.sum_upper) + " in upper part\n";
+        msg += Math.floor(this.evaluation.sum_lower) + " / " + Math.floor(this.condition.sum_lower) + " in lower part";
         return msg;
+    };
+    MasterOfSky.prototype.updateProgress = function() {
+        var h = this.treeEvaluator.tree.leafDensity.height;
+        var h_upper = Math.ceil(h*this.size);
+        var res = this.treeEvaluator.tree.genome.leaf_density_resolution;
+        var y = h_upper*res;
+        this.gui.progressText.setText(this.progressMsg());
+        this.gui.progressText.y = y;
     };
     MasterOfSky.prototype.draw = function() {
         var graphics = this.gui.graphics;
