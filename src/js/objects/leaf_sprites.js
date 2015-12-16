@@ -130,10 +130,15 @@ define(['phaser', 'helper'], function (Phaser, Helper) {
         // pick a color from a random pixel in colormap
         var x = this.game.rnd.integerInRange(0, this.colormap.width);
         var y = this.game.rnd.integerInRange(0, this.colormap.height);
-        var color = this.colormap.getPixelRGB(x, y);
 
         // swap byte order
-        color = color.r * 0x010000 + color.g * 0x000100 + color.b * 0x000001; // + color.a;
+        if(this.genome.colormap_swap_byteorder){
+            var color = this.colormap.getPixelRGB(x, y);
+            color = color.r * 0x010000 + color.g * 0x000100 + color.b * 0x000001; // + color.a;
+        } else {
+            var color = this.colormap.getPixel32(x, y);
+            // color = color.b * 0x010000 + color.g * 0x000100 + color.r * 0x000001; // + color.a;
+        }
 
         return color;
     };

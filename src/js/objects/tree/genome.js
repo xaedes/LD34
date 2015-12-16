@@ -25,6 +25,7 @@ define(['phaser','helper'], function(Phaser,Helper) {
             alpha: 0.6, 
             num_frames: 50, 
             colormap: "colormap_green",
+            colormap_swap_byteorder: true,
             name: "green_leafs",
             emitter: {
                 particles_max: 1000,
@@ -85,7 +86,8 @@ define(['phaser','helper'], function(Phaser,Helper) {
                 leafs_per_frame_max: 10, 
                 alpha: 0.6, 
                 num_frames: 100, 
-                colormap: "colormap",
+                colormap: "colormap_brown",
+                colormap_swap_byteorder: true,
                 name: "ground_brush",
             },
             num: 5000,
