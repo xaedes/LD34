@@ -7,17 +7,16 @@ define(['phaser', 'helper', 'objects/tree_evaluator', 'quests/quest'],
         Quest.call(this, game, gui, treeEvaluator, tier);
         this.title = tier+".Master Of Zero";
         this.secondsToWin = 10;
-        this.max_tier = 100;
+        this.max_tier = 20;
         this.difficulty = this.tier/this.max_tier;
-        // this.size = 0.5*this.difficulty;
         this.size = Helper.lerp(0.0,0.5,this.difficulty);
         this.condition = {
-            sum: Helper.lerp(15,20,this.difficulty),
-            sum_middle: Helper.lerp(10,0,this.difficulty)
+            sum_middle: Math.floor(Helper.lerp(10,0,this.difficulty)),
+            sum:        Math.floor(Helper.lerp(15,30,this.difficulty))
         };
         this.description = "Grow a tree, with leafs but leaf a hole in the middle.";
-        this.description += "\nYou can have at most " + Math.floor(this.condition.sum_middle) + " leaves in the middle";
-        this.description += "\nYou need at least " + Math.floor(this.condition.sum) + " leaves on the tree.";
+        this.description += "\nYou can have at most " + this.condition.sum_middle + " leaves in the middle";
+        this.description += "\nYou need at least " + this.condition.sum + " leaves on the tree.";
         this.on_the_way_msg = "This looks good!";
         this.success_msg = "I am amazed by your lately growth. I shall now call you Master Of Zero.";
     }
@@ -30,8 +29,8 @@ define(['phaser', 'helper', 'objects/tree_evaluator', 'quests/quest'],
     };
     MasterOfZero.prototype.progressMsg = function() {
         var msg = "";
-        msg += Math.floor(this.evaluation.sum_middle) + " / " + Math.floor(this.condition.sum_middle) + " in the middle\n";
-        msg += Math.floor(this.evaluation.sum) + " / " + Math.floor(this.condition.sum) + " on the tree";
+        msg += Math.floor(this.evaluation.sum_middle) + " / " + this.condition.sum_middle + " in the middle\n";
+        msg += Math.floor(this.evaluation.sum) + " / " + this.condition.sum + " on the tree";
         return msg;
     };
     MasterOfZero.prototype.updateProgress = function() {

@@ -9,7 +9,7 @@ define(['phaser','helper'], function(Phaser,Helper) {
         this.x = 0.5;
         this.y = 0.90;
         this.grow_rate = 1000 / 25;
-        this.grow_count = 15;
+        this.grow_count = 45;
         this.slow_grow = 0.1;
         this.slow_grow_rate = 1000 / 2;
         this.leaf = {
@@ -101,7 +101,7 @@ define(['phaser','helper'], function(Phaser,Helper) {
             start_config: {
                 angle: -90,
                 length: 50,
-                strength: 20,
+                strength: 10,
                 year: 10,
                 radius: 50
             },
