@@ -7,7 +7,7 @@ define(['helper'], function(Helper) {
         preload: function() {
             // load all game assets
             // images, spritesheets, atlases, audio etc..
-            this.load.image('colormap', 'assets/colormap.png');
+            this.load.image('colormap', 'assets/colormap.jpg');
             this.load.image('colormap_brown', 'assets/colormap_1.png');
             this.load.image('colormap_green', 'assets/colormap_green.png');
 
